@@ -1,0 +1,57 @@
+/* ====== CART PAGE ====== */
+.cart-page {
+  background: linear-gradient(180deg, #fff, #fafafa);
+  min-height: auto; /* ❌ bỏ ép chiều cao full màn hình */
+  padding: 25px 0 30px; /* giảm padding dưới */
+  font-family: "Segoe UI", sans-serif;
+}
+
+.cart-page .container {
+  margin-bottom: 0 !important; /* ✅ tránh dư khoảng dưới */
+}
+
+/* ====== TABLE ====== */
+.cart-list {
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 15px; /* giảm khoảng cách với phần summary */
+}
+
+/* ====== TÓM TẮT ĐƠN HÀNG ====== */
+.cart-summary {
+  border-radius: 10px;
+  background: #fff;
+  transition: all 0.3s ease;
+  padding: 20px 18px !important;
+  margin-bottom: 0 !important; /* ✅ bỏ khoảng trắng thừa dưới */
+}
+
+.cart-summary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 5px 14px rgba(0, 0, 0, 0.06);
+}
+
+.cart-summary button {
+  background: linear-gradient(90deg, #ff3d3d, #ff6b6b);
+  border: none;
+  border-radius: 8px;
+  padding: 10px 0;
+  font-size: 0.95rem;
+  transition: all 0.3s ease;
+}
+
+.cart-summary button:hover {
+  background: linear-gradient(90deg, #ff6b6b, #ff3d3d);
+  transform: translateY(-1px);
+}
+
+/* ====== RESPONSIVE ====== */
+@media (max-width: 768px) {
+  .cart-page {
+    padding: 20px 0 25px; /* ✅ gọn hơn ở mobile */
+  }
+
+  .cart-summary {
+    margin-top: 15px;
+  }
+}

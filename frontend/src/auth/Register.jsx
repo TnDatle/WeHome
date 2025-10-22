@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 import { Container, Row, Col, Card, Form, Button, Alert } from "react-bootstrap";
 import { Helmet } from "react-helmet-async";
+import { getProvinces, getCommunes } from "../API/Vietnam";
 import "../style/Register.css";
 
 export default function Register() {
@@ -20,36 +20,17 @@ export default function Register() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
-  // Lấy danh sách Tỉnh/Thành (CAS Address Kit 2025 - dữ liệu sau sáp nhập)
+  // --- Lấy danh sách tỉnh/thành ---
   useEffect(() => {
-    axios
-      .get("https://production.cas.so/address-kit/2025-07-01/provinces")
-      .then((res) => {
-        const provinceList = res.data.provinces || [];
-        setProvinces(provinceList);
-        console.log("📦 Provinces loaded:", provinceList);
-      })
-      .catch((err) => console.error("❌ Lỗi tải Tỉnh/Thành:", err));
+    getProvinces().then(setProvinces);
   }, []);
 
-  // Khi chọn Tỉnh -> Lấy danh sách Phường/Xã (sau sáp nhập)
+  // --- Khi chọn tỉnh ---
   const handleProvinceChange = async (e) => {
     const provinceCode = e.target.value;
     setForm({ ...form, province: provinceCode, commune: "" });
-    setCommunes([]);
-
-    if (!provinceCode) return;
-
-    try {
-      const res = await axios.get(
-        `https://production.cas.so/address-kit/2025-07-01/provinces/${provinceCode}/communes`
-      );
-      const communeList = res.data.communes || [];
-      setCommunes(communeList);
-      console.log("🏙️ Communes loaded:", communeList);
-    } catch (error) {
-      console.error("❌ Lỗi tải Phường/Xã:", error);
-    }
+    const data = await getCommunes(provinceCode);
+    setCommunes(data);
   };
 
   const handleChange = (e) => {

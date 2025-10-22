@@ -12,7 +12,7 @@ export default function Header() {
         <Container className="d-flex justify-content-between align-items-center">
           <span className="text-white">
             <FaPhoneAlt className="me-2" />
-            <strong>Hotline:</strong> 0832.216.580
+            <strong>Hotline:</strong> 0909.090.909
           </span>
           <div className="top-links">
             <a href="#">Chính sách bán hàng</a>
@@ -47,7 +47,7 @@ export default function Header() {
             </Col>
 
             <Col md={3} sm={12} className="icons text-center text-md-end mt-3 mt-md-0">
-              <a href="#" className="icon-item">
+              <a href="../pages/Cart" className="icon-item">
                 <FaShoppingCart />
                 <span>Giỏ hàng</span>
               </a>

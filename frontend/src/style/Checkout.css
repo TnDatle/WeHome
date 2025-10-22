@@ -1,0 +1,60 @@
+.checkout-page {
+  font-family: "Segoe UI", Arial, sans-serif;
+  background: #f8f9fa;
+  min-height: 100vh;
+}
+
+.checkout-card,
+.checkout-summary {
+  border-radius: 16px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.checkout-card:hover,
+.checkout-summary:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+}
+
+.checkout-card h5,
+.checkout-summary h5 {
+  color: #dc3545;
+}
+
+.checkout-summary {
+  background: linear-gradient(135deg, #fff, #fdf3f3);
+}
+
+.checkout-summary hr {
+  margin: 12px 0;
+  border-color: #ddd;
+}
+
+.checkout-card select,
+.checkout-card input,
+.checkout-card textarea {
+  border-radius: 10px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.checkout-card select:focus,
+.checkout-card input:focus,
+.checkout-card textarea:focus {
+  border-color: #dc3545;
+  box-shadow: 0 0 0 0.15rem rgba(220, 53, 69, 0.25);
+}
+
+.payment-options {
+  border: 1px solid #e5e5e5;
+  border-radius: 10px;
+  padding: 10px 15px;
+  background: #fafafa;
+}
+
+.payment-options .form-check-label {
+  font-weight: 500;
+}
+
+.payment-options input[type="radio"]:checked + label {
+  color: #dc3545;
+}

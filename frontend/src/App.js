@@ -7,6 +7,8 @@ import Home from "./pages/Home";
 import TrackOrder from "./pages/TrackOrder"; 
 import Login from "./auth/Login";
 import Register from "./auth/Register";
+import Cart from "./pages/Cart";
+import Checkout from "./pages/Checkout";
 
 function App() {
   return (
@@ -19,7 +21,8 @@ function App() {
             <Route path="/pages/TrackOrder" element={<TrackOrder />} /> 
             <Route path="/auth/Login" element={<Login />} /> 
             <Route path="/auth/Register" element={<Register />} /> 
-
+            <Route path="/pages/Cart" element={<Cart />} /> 
+            <Route path="/pages/Checkout" element={<Checkout />} /> 
           </Routes>
         </main>
         <Footer />
