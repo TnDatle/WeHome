@@ -9,6 +9,7 @@ import Login from "./auth/Login";
 import Register from "./auth/Register";
 import Cart from "./pages/Cart";
 import Checkout from "./pages/Checkout";
+import Product from "./product/Product";
 
 function App() {
   return (
@@ -23,6 +24,7 @@ function App() {
             <Route path="/auth/Register" element={<Register />} /> 
             <Route path="/pages/Cart" element={<Cart />} /> 
             <Route path="/pages/Checkout" element={<Checkout />} /> 
+            <Route path="/category/:slug" element={<Product />} />
           </Routes>
         </main>
         <Footer />

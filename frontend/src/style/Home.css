@@ -1,205 +1,120 @@
-/* ==== HERO BANNER ==== */
-.hero-banner {
-  position: relative;
-  width: 100%;
-  aspect-ratio: 16 / 6; /* Giữ tỉ lệ banner rộng mà không cần height cố định */
-  background: url("https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1600&q=80")
-    center center / cover no-repeat;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #fff;
-  text-align: center;
-  overflow: hidden;
+.home-page {
+  background: #f8f9fa;
+  font-family: "Segoe UI", Arial, sans-serif;
 }
 
-.hero-banner::before {
+
+/* === SIDEBAR === */
+.category-sidebar {
+  border-radius: 10px;
+  min-width: 270px;   
+  max-width: 280px;   
+  background: #fff;
+  margin-right: 25px;  
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  padding: 14px 18px;
+}
+
+.category-sidebar ul {
+  padding-left: 0;
+  margin: 0;
+}
+
+.category-link {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  color: #333;
+  font-size: 0.95rem;
+  padding: 6px 10px;
+  border-radius: 6px;
+  transition: all 0.25s ease;
+  white-space: nowrap;      
+  overflow: hidden;          
+  text-overflow: ellipsis;  
+  width: 100%;                
+}
+
+.category-link span {
+  flex-shrink: 0;             /* icon không co lại */
+  margin-right: 8px;
+}
+
+.category-link:hover {
+  background: #ffe6e9;
+  color: #dc3545;
+  transform: translateX(3px);
+}
+
+/* === MAIN BANNER === */
+.main-banner {
+  background: linear-gradient(90deg, #ff3d3d, #ff6b6b);
+  height: 280px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  padding: 30px;
+  color: #fff;
+}
+
+.main-banner::after {
   content: "";
   position: absolute;
   inset: 0;
-  background: rgba(0, 0, 0, 0.45);
-  z-index: 1;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 8px;
 }
 
-.banner-content {
+.banner-text {
   position: relative;
   z-index: 2;
-  max-width: 800px;
-  padding: 20px;
-  animation: fadeInUp 1s ease-in-out;
+  max-width: 500px;
+  color: #fff ;
 }
 
-.banner-content h1 {
-  font-size: clamp(2rem, 4vw, 3rem);
-  font-weight: 700;
-  margin-bottom: 10px;
-  letter-spacing: 1px;
-  line-height: 1.3;
-}
-
-.banner-content p {
-  font-size: clamp(1rem, 1.8vw, 1.2rem);
-  margin-bottom: 20px;
-  opacity: 0.9;
-  line-height: 1.6;
-}
-
-.banner-btn {
-  background: linear-gradient(90deg, #ff3d3d, #ff6b6b);
-  border: none;
-  font-weight: 600;
-  padding: 12px 32px;
-  border-radius: 8px;
+/* === PRODUCT DEMO === */
+.product-card {
+  border-radius: 10px;
+  overflow: hidden;
   transition: all 0.3s ease;
-  cursor: pointer;
-  font-size: clamp(0.9rem, 1.5vw, 1rem);
 }
 
-.banner-btn:hover {
+.product-card:hover {
   transform: translateY(-3px);
-  background: linear-gradient(90deg, #ff6b6b, #ff3d3d);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
 }
 
-/* === DANH MỤC === */
-/* ==== KHUNG DANH MỤC ==== */
-.banner-categories {
-  background: rgba(255, 255, 255, 0.12);
-  border-radius: 20px;
-  padding: 20px 15px;
-  backdrop-filter: blur(10px);
-  box-shadow: 0 6px 25px rgba(0, 0, 0, 0.25);
-  max-width: 950px;
-  margin: 0 auto;
-}
-
-/* ==== MỖI Ô DANH MỤC ==== */
-.banner-category-card {
-  background: rgba(255, 255, 255, 0.15);
-  border: 1px solid rgba(255, 255, 255, 0.25);
-  border-radius: 14px;
-  width: 100%;
-  height: 100%;
-  min-height: 100px;
-  padding: 10px;
-  transition: all 0.3s ease;
-  cursor: pointer;
-
-  /* Căn giữa nội dung hoàn hảo */
+.product-img-wrapper {
+  background: #fff;
+  height: 180px;
   display: flex;
-  flex-direction: column;
-  align-items: center;
   justify-content: center;
-
-  color: #fff;
-  text-align: center;
-  backdrop-filter: blur(6px);
+  align-items: center;
 }
 
-/* ==== Icon + text ==== */
-.banner-category-icon {
-  font-size: 2rem;
-  margin-bottom: 8px;
-  display: inline-block;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
+.product-img-wrapper img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
 }
 
-.banner-category-name {
-  font-weight: 600;
+.product-name {
   font-size: 0.9rem;
-  color: #fff;
-  line-height: 1.2;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  color: #222;
+  margin-bottom: 6px;
+  height: 40px;
+  overflow: hidden;
 }
 
-/* ==== Hover effect ==== */
-.banner-category-card:hover {
-  background: rgba(255, 255, 255, 0.35);
-  transform: translateY(-4px);
-  box-shadow: 0 6px 20px rgba(255, 255, 255, 0.25);
+.product-price {
+  font-size: 1rem;
 }
 
-/* ==== Animation khi load ==== */
-.banner-category-card {
-  opacity: 0;
-  transform: translateY(15px);
-  animation: fadeUp 0.6s ease forwards;
-}
 
-@keyframes fadeUp {
-  to {
-    opacity: 1;
-    transform: translateY(0);
+@media (min-width: 768px) {
+  .home-page .col-md-9,
+  .home-page .col-lg-10 {
+    padding-left: 70px !important; /* ✅ chừa khoảng giữa 2 cột */
   }
 }
 
-.banner-category-card:nth-child(1) { animation-delay: 0.05s; }
-.banner-category-card:nth-child(2) { animation-delay: 0.1s; }
-.banner-category-card:nth-child(3) { animation-delay: 0.15s; }
-.banner-category-card:nth-child(4) { animation-delay: 0.2s; }
-.banner-category-card:nth-child(5) { animation-delay: 0.25s; }
-.banner-category-card:nth-child(6) { animation-delay: 0.3s; }
-.banner-category-card:nth-child(7) { animation-delay: 0.35s; }
-.banner-category-card:nth-child(8) { animation-delay: 0.4s; }
-.banner-category-card:nth-child(9) { animation-delay: 0.45s; }
-.banner-category-card:nth-child(10) { animation-delay: 0.5s; }
-
-/* ==== Responsive ==== */
-@media (max-width: 768px) {
-  .banner-categories {
-    padding: 15px 10px;
-    border-radius: 16px;
-  }
-  .banner-category-card {
-    min-height: 90px;
-  }
-  .banner-category-icon {
-    font-size: 1.6rem;
-  }
-  .banner-category-name {
-    font-size: 0.8rem;
-  }
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-  .hero-banner {
-    height: 450px;
-  }
-  .banner-category-icon {
-    font-size: 1.5rem;
-  }
-  .banner-category-name {
-    font-size: 0.8rem;
-  }
-}
-
-/* Animation */
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(25px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* Responsive */
-@media (max-width: 992px) {
-  .hero-banner {
-    aspect-ratio: 16 / 8;
-  }
-}
-
-@media (max-width: 768px) {
-  .hero-banner {
-    aspect-ratio: 16 / 10;
-  }
-}
-
-@media (max-width: 480px) {
-  .hero-banner {
-    aspect-ratio: 4 / 3;
-  }
-}
