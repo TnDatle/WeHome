@@ -1,0 +1,67 @@
+/* ====== LOGIN PAGE (tinh chỉnh spacing gọn gàng) ====== */
+.login-page {
+  background: linear-gradient(180deg, #fff, #fafafa);
+  min-height: auto; /* ❌ bỏ ép full height */
+  padding: 60px 0 80px; /* ✅ vừa đủ khoảng cách trên dưới */
+  display: flex;
+  justify-content: center;
+}
+
+.login-card {
+  border-radius: 10px;
+  background: #fff;
+  transition: all 0.3s ease;
+  padding: 22px 26px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  width: 100%;
+  max-width: 420px; /* ✅ giữ form vừa khít, không to quá */
+  margin: 40px auto; /* ✅ tạo khoảng cách nhẹ ở trên */
+}
+
+.login-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+}
+
+/* ====== INPUT ====== */
+.form-input {
+  border-radius: 6px;
+  padding: 8px 10px;
+  transition: all 0.3s ease;
+  border: 1px solid #ddd;
+  font-size: 0.95rem;
+}
+
+.form-input:focus {
+  border-color: #ff3d3d;
+  box-shadow: 0 0 4px rgba(255, 61, 61, 0.4);
+}
+
+/* ====== BUTTON ====== */
+.login-btn {
+  padding: 8px 0;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  transition: all 0.3s ease;
+}
+
+.login-btn:hover {
+  background: #ff6b6b;
+  transform: translateY(-1px);
+}
+
+a.text-danger:hover {
+  text-decoration: underline;
+}
+
+/* ====== RESPONSIVE ====== */
+@media (max-width: 768px) {
+  .login-page {
+    padding: 40px 0 60px; /* giảm padding ở mobile */
+  }
+
+  .login-card {
+    margin-top: 20px;
+    padding: 18px 22px;
+  }
+}

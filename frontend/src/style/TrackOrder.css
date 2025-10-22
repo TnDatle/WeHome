@@ -1,0 +1,65 @@
+.track-order-page {
+  background: #fafafa;
+  min-height: auto; /* không ép cao */
+  padding-bottom: 60px;
+  transition: all 0.4s ease;
+}
+
+.track-card {
+  border-radius: 10px;
+  background: #fff;
+  transition: all 0.3s ease;
+}
+
+.track-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+}
+
+.result-card {
+  border-radius: 10px;
+  background: #fff;
+  transition: all 0.3s ease;
+  animation: fadeIn 0.5s ease forwards;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.status span {
+  color: #ff3d3d;
+  font-weight: 600;
+}
+
+.product-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.product-list li {
+  display: flex;
+  justify-content: space-between;
+  border-bottom: 1px solid #eee;
+  padding: 8px 0;
+  font-size: 0.95rem;
+}
+
+.product-list li:last-child {
+  border-bottom: none;
+}
+
+@media (max-width: 768px) {
+  .track-card,
+  .result-card {
+    padding: 20px;
+  }
+}

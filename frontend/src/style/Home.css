@@ -1,0 +1,92 @@
+/* ==== HERO BANNER ==== */
+.hero-banner {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 6; /* Giữ tỉ lệ banner rộng mà không cần height cố định */
+  background: url("https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1600&q=80")
+    center center / cover no-repeat;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  text-align: center;
+  overflow: hidden;
+}
+
+.hero-banner::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 1;
+}
+
+.banner-content {
+  position: relative;
+  z-index: 2;
+  max-width: 800px;
+  padding: 20px;
+  animation: fadeInUp 1s ease-in-out;
+}
+
+.banner-content h1 {
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 700;
+  margin-bottom: 10px;
+  letter-spacing: 1px;
+  line-height: 1.3;
+}
+
+.banner-content p {
+  font-size: clamp(1rem, 1.8vw, 1.2rem);
+  margin-bottom: 20px;
+  opacity: 0.9;
+  line-height: 1.6;
+}
+
+.banner-btn {
+  background: linear-gradient(90deg, #ff3d3d, #ff6b6b);
+  border: none;
+  font-weight: 600;
+  padding: 12px 32px;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  font-size: clamp(0.9rem, 1.5vw, 1rem);
+}
+
+.banner-btn:hover {
+  transform: translateY(-3px);
+  background: linear-gradient(90deg, #ff6b6b, #ff3d3d);
+}
+
+/* Animation */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(25px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+  .hero-banner {
+    aspect-ratio: 16 / 8;
+  }
+}
+
+@media (max-width: 768px) {
+  .hero-banner {
+    aspect-ratio: 16 / 10;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero-banner {
+    aspect-ratio: 4 / 3;
+  }
+}
