@@ -1,17 +1,27 @@
 import admin from "firebase-admin";
-import { readFileSync } from "fs";
-import { resolve } from "path";
+import { getFirestore } from "firebase-admin/firestore";
+import path from "path";
+import fs from "fs";
+import { fileURLToPath } from "url";
 
-// Đường dẫn tuyệt đối tới file key
-const serviceAccount = JSON.parse(
-  readFileSync(resolve("./config/firebase-key.json"))
-);
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
-// Khởi tạo Firebase Admin
-admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
-});
+const serviceAccountPath = path.join(__dirname, "serviceAccountKey.json");
 
-const db = admin.firestore();
+if (!fs.existsSync(serviceAccountPath)) {
+  console.error("❌ Không tìm thấy file serviceAccountKey.json!");
+  process.exit(1);
+}
 
+const serviceAccount = JSON.parse(fs.readFileSync(serviceAccountPath, "utf8"));
+
+if (!admin.apps.length) {
+  admin.initializeApp({
+    credential: admin.credential.cert(serviceAccount),
+  });
+}
+
+const db = getFirestore();
+console.log("✅ Firebase is configured (connection OK)!");
 export default db;
