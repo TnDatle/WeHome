@@ -131,29 +131,36 @@ export default function Products() {
           <div className="category-grid">
             {products.length > 0 ? (
               products.map((p) => (
-                <div key={p.id} className="product-card">
-                  <div className="product-img-wrapper">
-                    <img src={p.image} alt={p.name} />
-                  </div>
-                  <div className="product-info">
-                    <p className="product-name">{p.name}</p>
-                    <div className="product-rating">
-                      {"⭐".repeat(Math.round(p.rating))}
-                      <span className="text-muted small">
-                        ({p.reviews} đánh giá)
-                      </span>
+                <Link
+                  key={p.id}
+                  to={`/product/${p.id}`} // ✅ dẫn đến trang chi tiết
+                  className="product-card-link"
+                  style={{ textDecoration: "none", color: "inherit" }}
+                >
+                  <div className="product-card">
+                    <div className="product-img-wrapper">
+                      <img src={p.image} alt={p.name} />
                     </div>
-                    <p className="product-price">
-                      {p.price.toLocaleString("vi-VN")}đ
-                    </p>
+                    <div className="product-info">
+                      <p className="product-name">{p.name}</p>
+                      <div className="product-rating">
+                        {"⭐".repeat(Math.round(p.rating))}
+                        <span className="text-muted small">
+                          ({p.reviews} đánh giá)
+                        </span>
+                      </div>
+                      <p className="product-price">
+                        {p.price.toLocaleString("vi-VN")}đ
+                      </p>
+                    </div>
                   </div>
-                </div>
+                </Link>
               ))
-            ) : (
-              <p className="text-center text-muted py-5">
-                Không có sản phẩm nào trong danh mục này.
-              </p>
-            )}
+              ) : (
+                <p className="text-center text-muted py-5">
+                  Không có sản phẩm nào trong danh mục này.
+                </p>
+              )}
           </div>
         </div>
       </div>

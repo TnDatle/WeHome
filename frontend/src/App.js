@@ -10,7 +10,12 @@ import Register from "./auth/Register";
 import Cart from "./pages/Cart";
 import Checkout from "./pages/Checkout";
 import Product from "./product/Product";
+import ProductDetail from "./product/ProductDetail";
+import Search from "./pages/Search";
 
+// ==== POLICY PAGES ====
+import DeliveryPolicy from "./policy/deliveryPolicy";
+import RefundPolicy from "./policy/refundPolicy";
 function App() {
   return (
     <Router>
@@ -25,6 +30,10 @@ function App() {
             <Route path="/pages/Cart" element={<Cart />} /> 
             <Route path="/pages/Checkout" element={<Checkout />} /> 
             <Route path="/category/:slug" element={<Product />} />
+            <Route path="/product/:id" element={<ProductDetail />} />
+            <Route path="/search" element={<Search />} /> 
+            <Route path="/policy/DeliveryPolicy" element={<DeliveryPolicy />} /> 
+            <Route path="/policy/RefundPolicy" element={<RefundPolicy />} /> 
           </Routes>
         </main>
         <Footer />

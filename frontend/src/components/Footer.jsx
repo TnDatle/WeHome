@@ -73,10 +73,11 @@ export default function Footer() {
             <Col md={4} sm={6} className="mb-4">
               <h5 className="footer-title">CHÍNH SÁCH KHÁCH HÀNG</h5>
               <ul className="footer-links list-unstyled">
+                <li><a href="../policy/DeliveryPolicy">Chính sách bán hàng</a></li>
                 <li><a href="#">Vận chuyển & giao nhận</a></li>
                 <li><a href="#">Bảo hành & bảo trì</a></li>
                 <li><a href="#">Bảo mật thông tin</a></li>
-                <li><a href="#">Đổi trả & hoàn tiền</a></li>
+                <li><a href="../policy/refundPolicy">Đổi trả & hoàn tiền</a></li>
               </ul>
 
               <h5 className="footer-title mt-4">KẾT NỐI CÙNG CHÚNG TÔI</h5>

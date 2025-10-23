@@ -1,10 +1,19 @@
-import React from "react";
+import React, { useState } from "react";
 import { Container, Row, Col, InputGroup, FormControl, Button } from "react-bootstrap";
 import { FaPhoneAlt, FaShoppingCart, FaUser, FaSearch, FaClipboardList, FaQuestionCircle } from "react-icons/fa";
-import { Link } from "react-router-dom";
+import { Link ,  useNavigate } from "react-router-dom";
 import "../style/Header.css";
 
 export default function Header() {
+  const [keyword, setKeyword] = useState("");
+  const navigate = useNavigate();
+
+  const handleSearch = () => {
+    const trimmed = keyword.trim();
+    if (trimmed !== "") {
+      navigate(`/search?q=${encodeURIComponent(trimmed)}`);
+    }
+  };
   return (
     <header className="header-area">
       {/* --- Thanh trên cùng --- */}
@@ -15,7 +24,6 @@ export default function Header() {
             <strong>Hotline:</strong> 0909.090.909
           </span>
           <div className="top-links">
-            <a href="#">Chính sách bán hàng</a>
             <a href="#">Liên hệ</a>
             <a href="#">Tuyển dụng</a>
             <a href="../auth/Login" className="login-link">
@@ -39,9 +47,15 @@ export default function Header() {
 
             <Col md={6} sm={12}>
               <InputGroup className="search-box">
-                <FormControl placeholder="Bạn cần tìm sản phẩm gì?" />
-                <Button variant="dark">
-                  <FaSearch /> Tìm kiếm
+                <FormControl
+                  placeholder="Bạn cần tìm sản phẩm gì?"
+                  value={keyword}
+                  onChange={(e) => setKeyword(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+                />
+                <Button variant="dark" onClick={handleSearch}>
+                  <FaSearch className="me-2" />
+                  Tìm kiếm
                 </Button>
               </InputGroup>
             </Col>

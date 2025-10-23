@@ -81,6 +81,10 @@ export default function Home() {
               <Row className="g-3">
                 {[1, 2, 3, 4].map((i) => (
                   <Col key={i} xs={6} md={4} lg={3}>
+                      <Link
+                        to={`/product/${i}`} 
+                        className="text-decoration-none text-dark"
+                      >
                     <Card className="product-card shadow-sm border-0">
                       <div className="product-img-wrapper">
                         <img
@@ -98,6 +102,7 @@ export default function Home() {
                         </p>
                       </Card.Body>
                     </Card>
+                    </Link>
                   </Col>
                 ))}
               </Row>
