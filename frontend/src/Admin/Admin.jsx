@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Container, Row, Col, Nav, Button, Table } from "react-bootstrap";
-import "./Admin.css";
+import "../style/Admin.css";
 
 function Admin() {
   const [activeTab, setActiveTab] = useState("dashboard");
