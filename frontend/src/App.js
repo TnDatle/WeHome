@@ -12,6 +12,8 @@ import Checkout from "./pages/Checkout";
 import Product from "./product/Product";
 import ProductDetail from "./product/ProductDetail";
 import Search from "./pages/Search";
+import Admin from "./admin/Admin";
+
 
 // ==== POLICY PAGES ====
 import DeliveryPolicy from "./policy/deliveryPolicy";
@@ -34,6 +36,8 @@ function App() {
             <Route path="/search" element={<Search />} /> 
             <Route path="/policy/DeliveryPolicy" element={<DeliveryPolicy />} /> 
             <Route path="/policy/RefundPolicy" element={<RefundPolicy />} /> 
+            <Route path="/admin" element={<Admin />} />
+
           </Routes>
         </main>
         <Footer />
