@@ -25,9 +25,9 @@
 /* Tiêu đề "Danh mục" */
 .category-sidebar h6 {
   color: #dc3545;
-  font-size: 1.05rem; /* ✅ to hơn nhẹ */
+  font-size: 1.05rem; 
   font-weight: 700;
-  margin-bottom: 18px; /* ✅ dãn ra */
+  margin-bottom: 18px; 
   letter-spacing: 0.3px;
   text-transform: uppercase;
 }
@@ -41,7 +41,7 @@
 
 /* Mỗi mục */
 .category-sidebar ul li {
-  margin-bottom: 12px; /* ✅ tăng khoảng cách giữa các dòng */
+  margin-bottom: 12px; 
 }
 
 
@@ -207,6 +207,6 @@
 @media (min-width: 768px) {
   .product-page .col-md-9,
   .product-page .col-lg-10 {
-    padding-left: 70px !important; /* ✅ tạo khoảng cách giữa 2 cột */
+    padding-left: 70px !important; 
   }
 }

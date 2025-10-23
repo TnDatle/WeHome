@@ -39,6 +39,22 @@ export default function Checkout() {
     setForm({ ...form, payment: e.target.value });
   };
 
+  // Tạo mã đơn hàng tự động
+  const [orderId] = useState(() => {
+    return "DH" + Date.now().toString().slice(-8);
+  });
+  
+  // Thông tin ngân hàng
+  const bankInfo = {
+    bank: "Vietcombank",
+    accountNumber: "000000000",
+    accountName: "NGUYEN VAN A",
+    amount: "1640000"
+  };
+  
+  // Tạo link QR code
+  const qrCodeUrl = `https://img.vietqr.io/image/VCB-${bankInfo.accountNumber}-compact2.png?amount=${bankInfo.amount}&addInfo=${orderId}&accountName=${encodeURIComponent(bankInfo.accountName)}`;
+
   return (
     <div className="checkout-page container py-4">
       <Helmet>
@@ -165,27 +181,92 @@ export default function Checkout() {
                     onChange={handlePaymentChange}
                     className="mb-2"
                   />
-                  <Form.Check
-                    type="radio"
-                    id="payment-bank"
-                    label="Chuyển khoản ngân hàng"
-                    value="bank"
-                    checked={form.payment === "bank"}
-                    onChange={handlePaymentChange}
-                    className="mb-2"
-                  />
-                  <Form.Check
-                    type="radio"
-                    id="payment-wallet"
-                    label="Ví điện tử (Momo, ZaloPay)"
-                    value="wallet"
-                    checked={form.payment === "wallet"}
-                    onChange={handlePaymentChange}
-                    className="mb-2"
-                  />
+                  
+                  <div className="payment-method-wrapper mb-2">
+                    <Form.Check
+                      type="radio"
+                      id="payment-bank"
+                      label="Chuyển khoản ngân hàng"
+                      value="bank"
+                      checked={form.payment === "bank"}
+                      onChange={handlePaymentChange}
+                    />
+                    {form.payment === "bank" && (
+                      <div className="bank-info mt-3 p-3 bg-light border rounded">
+                        <Row>
+                          <Col md={7}>
+                            <p className="mb-2"><strong>Ngân hàng:</strong> {bankInfo.bank}</p>
+                            <p className="mb-2"><strong>Số tài khoản:</strong> {bankInfo.accountNumber}</p>
+                            <p className="mb-2"><strong>Chủ tài khoản:</strong> {bankInfo.accountName}</p>
+                            <p className="mb-2"><strong>Số tiền:</strong> {parseInt(bankInfo.amount).toLocaleString('vi-VN')}₫</p>
+                            <p className="mb-0">
+                              <strong>Nội dung:</strong> 
+                              <span className="text-danger fw-semibold ms-1">{orderId}</span>
+                            </p>
+                            <small className="text-muted d-block mt-1">
+                              * Vui lòng ghi đúng nội dung để được xác nhận nhanh
+                            </small>
+                          </Col>
+                          <Col md={5} className="text-center">
+                            <img 
+                              src={qrCodeUrl}
+                              alt="QR Code thanh toán" 
+                              className="img-fluid rounded"
+                              style={{maxWidth: "180px", border: "2px solid #ddd"}}
+                            />
+                            <small className="text-muted d-block mt-2">
+                              Quét mã QR để thanh toán
+                            </small>
+                          </Col>
+                        </Row>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="payment-method-wrapper">
+                    <Form.Check
+                      type="radio"
+                      id="payment-wallet"
+                      label="Ví điện tử"
+                      value="wallet"
+                      checked={form.payment === "wallet"}
+                      onChange={handlePaymentChange}
+                    />
+                    {form.payment === "wallet" && (
+                      <div className="wallet-options mt-2 d-flex gap-3 ps-4">
+                        <div 
+                          className="wallet-item p-3 border rounded text-center cursor-pointer"
+                          style={{flex: 1, cursor: "pointer", transition: "all 0.2s"}}
+                          onClick={() => alert("Chuyển đến Momo")}
+                          onMouseEnter={(e) => e.currentTarget.style.borderColor = "#d82d8b"}
+                          onMouseLeave={(e) => e.currentTarget.style.borderColor = "#dee2e6"}
+                        >
+                          <img 
+                            src="https://upload.wikimedia.org/wikipedia/vi/f/fe/MoMo_Logo.png" 
+                            alt="Momo" 
+                            style={{width: "60px", height: "60px", objectFit: "contain"}}
+                          />
+                          <p className="mb-0 mt-2 fw-semibold">Momo</p>
+                        </div>
+                        <div 
+                          className="wallet-item p-3 border rounded text-center cursor-pointer"
+                          style={{flex: 1, cursor: "pointer", transition: "all 0.2s"}}
+                          onClick={() => alert("Chuyển đến VNPay")}
+                          onMouseEnter={(e) => e.currentTarget.style.borderColor = "#0066b2"}
+                          onMouseLeave={(e) => e.currentTarget.style.borderColor = "#dee2e6"}
+                        >
+                          <img 
+                            src="https://vnpay.vn/s1/statics.vnpay.vn/2023/9/06ncktiwd6dc1694418196384.png" 
+                            alt="VNPay" 
+                            style={{width: "60px", height: "60px", objectFit: "contain"}}
+                          />
+                          <p className="mb-0 mt-2 fw-semibold">VNPay</p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </Form.Group>
-
               {/* ======= Ghi chú ======= */}
               <Form.Group className="mb-3">
                 <Form.Label>Ghi chú</Form.Label>

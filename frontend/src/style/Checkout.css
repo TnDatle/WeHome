@@ -10,15 +10,11 @@
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.checkout-card:hover,
-.checkout-summary:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
-}
-
 .checkout-card h5,
 .checkout-summary h5 {
   color: #dc3545;
+  font-size: 26px; /* Tăng kích thước tiêu đề */
+  font-weight: 600;
 }
 
 .checkout-summary {
@@ -35,6 +31,7 @@
 .checkout-card textarea {
   border-radius: 10px;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  font-size: 16px; /* Tăng font trong input */
 }
 
 .checkout-card select:focus,
@@ -44,6 +41,11 @@
   box-shadow: 0 0 0 0.15rem rgba(220, 53, 69, 0.25);
 }
 
+.checkout-card label {
+  font-size: 16px; /* Tăng kích thước label */
+  font-weight: 500;
+}
+
 .payment-options {
   border: 1px solid #e5e5e5;
   border-radius: 10px;
@@ -51,10 +53,42 @@
   background: #fafafa;
 }
 
+.payment-options .form-check {
+  display: flex;
+  align-items: center; /* Căn đều theo chiều dọc */
+  gap: 8px; /* Khoảng cách giữa radio và label */
+}
+
+.payment-options .form-check-input {
+  width: 16px; /* Giảm kích thước radio button */
+  height: 16px;
+  margin: 0; /* Bỏ margin mặc định */
+  flex-shrink: 0; /* Không cho radio bị co lại */
+}
+
 .payment-options .form-check-label {
   font-weight: 500;
+  font-size: 16px; /* Tăng kích thước text */
+  margin: 0; /* Bỏ margin mặc định */
+  cursor: pointer;
 }
 
 .payment-options input[type="radio"]:checked + label {
   color: #dc3545;
+}
+
+/* Tăng kích thước text trong summary */
+.checkout-summary p,
+.checkout-summary div,
+.checkout-summary span {
+  font-size: 16px;
+}
+
+.checkout-summary .fw-bold {
+  font-size: 18px; /* Tổng tiền lớn hơn */
+}
+
+/* Tăng kích thước button text */
+.btn {
+  font-size: 17px;
 }
