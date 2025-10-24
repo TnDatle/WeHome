@@ -1,0 +1,140 @@
+.dashboard-container {
+  padding: 50px 60px; /* 🧱 thêm không gian quanh dashboard */
+}
+
+.section-title {
+  font-weight: 700;
+  font-size: 1.6rem;
+  margin-bottom: 35px;
+}
+
+/* ======================== THẺ THỐNG KÊ ======================== */
+.dashboard-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); /* bự hơn */
+  gap: 30px;
+}
+
+.stat-card {
+  border-radius: var(--radius);
+  color: #fff;
+  padding: 36px 30px; /* 🧱 to hơn */
+  box-shadow: var(--shadow);
+  transition: 0.3s;
+  cursor: pointer;
+}
+.stat-card:hover {
+  transform: translateY(-6px);
+}
+.stat-card h6 {
+  font-weight: 500;
+  font-size: 1.1rem;
+  opacity: 0.95;
+  margin-bottom: 6px;
+}
+.stat-card h2 {
+  font-size: 2.5rem; /* 📈 số to hơn */
+  font-weight: 700;
+  margin: 0;
+}
+.stat-card p {
+  font-size: 1rem;
+  opacity: 0.9;
+  margin-top: 5px;
+}
+
+.red { background: var(--red); }
+.orange { background: var(--orange); }
+.blue { background: var(--blue); }
+.green { background: var(--green); }
+
+/* ======================== BIỂU ĐỒ ======================== */
+.dashboard-charts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(420px, 1fr)); /* bự hơn */
+  gap: 30px;
+  margin-top: 50px;
+}
+
+.chart-card {
+  background: #fff;
+  padding: 36px;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  min-height: 400px; /* card cao hơn */
+}
+
+.chart-card h6 {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+/* ======================== PIE CHART ======================== */
+.chart-pie {
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  background: conic-gradient(
+    var(--red) 40%,
+    var(--orange) 30%,
+    var(--purple) 30%
+  );
+  margin: 40px auto;
+  box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.08);
+}
+
+.legend {
+  list-style: none;
+  padding-left: 0;
+  font-size: 1rem;
+  text-align: center;
+}
+.legend li {
+  margin-bottom: 8px;
+}
+.dot {
+  width: 12px;
+  height: 12px;
+  display: inline-block;
+  border-radius: 50%;
+  margin-right: 8px;
+}
+.dot.red { background: var(--red); }
+.dot.orange { background: var(--orange); }
+.dot.purple { background: var(--purple); }
+
+/* ======================== BAR CHART ======================== */
+.chart-bars {
+  display: flex;
+  align-items: flex-end;
+  gap: 16px;
+  height: 260px; /* 🎯 cao hơn rõ rệt */
+  justify-content: center;
+  margin-top: 30px;
+}
+.bar {
+  width: 26px; /* to hơn */
+  background: var(--red);
+  border-radius: 8px 8px 0 0;
+  transition: 0.3s;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+.bar:hover {
+  background: var(--orange);
+  transform: scaleY(1.1);
+}
+
+/* --------- Trạng thái chưa có dữ liệu --------- */
+.no-data {
+  color: #888;
+  font-style: italic;
+  text-align: center;
+  margin-top: 10px;
+  font-size: 1rem;
+}
+
+/* thêm màu tím & xám cho thẻ thống kê mới */
+.purple { background: var(--purple); }
+.gray { background: #6c757d; }

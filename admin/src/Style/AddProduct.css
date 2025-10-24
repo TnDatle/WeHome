@@ -1,0 +1,140 @@
+.add-product-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 3000;
+  backdrop-filter: blur(2px);
+}
+
+.add-product-content {
+  background: #fff;
+  border-radius: 16px;
+  width: 650px;
+  max-width: 95%;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  font-family: "Segoe UI", Arial, sans-serif;
+  overflow: hidden;
+  animation: fadeInUp 0.3s ease;
+}
+
+/* --- Header --- */
+.add-product-content h4 {
+  margin: 0;
+  padding: 18px 24px;
+  background: linear-gradient(90deg, #198754, #0d6efd);
+  color: white;
+  text-align: center;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+/* --- Body --- */
+.add-product-content form {
+  padding: 25px 30px;
+}
+
+.add-product-content label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 600;
+  color: #333;
+  font-size: 0.95rem;
+}
+
+.add-product-content input,
+.add-product-content select,
+.add-product-content textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  margin-bottom: 16px;
+  font-size: 0.96rem;
+  background: #fafafa;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.add-product-content input:focus,
+.add-product-content select:focus,
+.add-product-content textarea:focus {
+  outline: none;
+  border-color: #198754;
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(25, 135, 84, 0.15);
+}
+
+/* --- Preview image --- */
+.preview-img {
+  width: 100%;
+  max-height: 260px;
+  border-radius: 10px;
+  margin-bottom: 12px;
+  object-fit: cover;
+  border: 2px solid #eee;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  transition: transform 0.25s ease;
+}
+
+.preview-img:hover {
+  transform: scale(1.02);
+}
+
+/* --- Button group --- */
+.btn-group {
+  display: flex;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.btn-save,
+.btn-cancel {
+  flex: 1;
+  font-size: 1rem;
+  border: none;
+  border-radius: 10px;
+  padding: 12px 14px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.2s ease-in-out;
+}
+
+.btn-save {
+  background: linear-gradient(90deg, #198754, #0d6efd);
+  color: white;
+  box-shadow: 0 3px 8px rgba(25, 135, 84, 0.3);
+}
+
+.btn-save:hover {
+  background: linear-gradient(90deg, #157347, #0b5ed7);
+  transform: translateY(-2px);
+}
+
+.btn-cancel {
+  background: #dc3545;
+  color: white;
+  box-shadow: 0 3px 8px rgba(220, 53, 69, 0.25);
+}
+
+.btn-cancel:hover {
+  background: #b02a37;
+  transform: translateY(-2px);
+}
+
+/* --- Animation --- */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(25px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

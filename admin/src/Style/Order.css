@@ -1,0 +1,289 @@
+:root {
+  --red: #dc3545;
+  --green: #198754;
+  --blue: #0d6efd;
+  --radius: 10px;
+  --shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  --font-sm: 0.9rem;
+}
+
+/* ============== CONTAINER ============== */
+.order-container {
+  background: #fff;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 22px 28px;
+  font-family: "Segoe UI", Arial, sans-serif;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+/* ============== HEADER ============== */
+.order-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.order-header h4 {
+  font-weight: 700;
+  color: #222;
+  font-size: 1.05rem;
+}
+
+.order-actions button {
+  background: var(--red);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 6px 12px;
+  cursor: pointer;
+  margin-left: 8px;
+  font-size: var(--font-sm);
+  transition: 0.3s;
+}
+
+.order-actions button:hover {
+  background: #b02a37;
+}
+
+/* ============== FILTER ============== */
+.order-filter {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 10px 0 18px;
+  flex-wrap: wrap;
+}
+
+.order-filter input[type="text"],
+.order-filter input[type="date"],
+.order-filter select {
+  flex: 1;
+  padding: 8px 10px;
+  border: 1px solid #ccc;
+  border-radius: var(--radius);
+  font-size: var(--font-sm);
+  outline: none;
+  transition: 0.2s;
+}
+
+.order-filter input:focus,
+.order-filter select:focus {
+  border-color: var(--red);
+}
+
+/* ============== TABLE ============== */
+.order-table {
+  width: 100%;
+  border-collapse: collapse;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  font-size: var(--font-sm);
+}
+
+.order-table th,
+.order-table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid #eee;
+  text-align: left;
+  vertical-align: middle;
+}
+
+.order-table th {
+  background: #f7f7f7;
+  font-weight: 600;
+  color: #333;
+}
+
+/* ============== BUTTONS IN TABLE ============== */
+.order-table td button {
+  background: #eee;
+  border: none;
+  border-radius: 5px;
+  padding: 5px 9px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: 0.2s;
+}
+
+.order-table td button:hover {
+  background: var(--red);
+  color: #fff;
+}
+
+.order-table td button.danger {
+  background: #f8d7da;
+  color: #b02a37;
+}
+
+.order-table td button.danger:hover {
+  background: #dc3545;
+  color: #fff;
+}
+
+/* ============== STATUS ============== */
+.status {
+  padding: 3px 8px;
+  border-radius: 14px;
+  font-size: 0.8rem;
+  color: #fff;
+  font-weight: 500;
+  white-space: nowrap;
+  text-align: center;
+  min-width: 80px;
+}
+
+.status.chờ { background: #ffc107; color: #222; }
+.status.đang { background: var(--blue); }
+.status.hoàn { background: var(--green); }
+.status.hủy { background: #6c757d; }
+
+/* ============== NO DATA ============== */
+.no-data {
+  text-align: center;
+  color: #888;
+  font-style: italic;
+  margin-top: 25px;
+  font-size: 0.9rem;
+}
+
+/* ============== PAGINATION ============== */
+.pagination {
+  margin-top: 12px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+}
+
+.pagination button {
+  border: none;
+  background: var(--blue);
+  color: #fff;
+  padding: 5px 9px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: 0.2s;
+}
+
+.pagination button:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+/* ============== MODAL CHI TIẾT ============== */
+.order-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.order-modal-content {
+  background: #fff;
+  padding: 20px 24px;
+  border-radius: 10px;
+  max-width: 720px;
+  width: 90%;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  animation: fadeIn 0.25s ease;
+  font-size: 0.9rem;
+}
+
+.order-modal-content h5 {
+  margin-bottom: 10px;
+  font-weight: 700;
+  color: #333;
+}
+
+.order-modal-content h6 {
+  margin-top: 12px;
+  margin-bottom: 6px;
+}
+
+.order-modal-content ul {
+  list-style: none;
+  padding-left: 0;
+  margin: 0;
+}
+
+.order-modal-content li {
+  padding: 4px 0;
+  border-bottom: 1px solid #eee;
+  font-size: 0.9rem;
+}
+
+.close-btn {
+  background: var(--red);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 7px 12px;
+  margin-top: 15px;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.close-btn:hover {
+  background: #b02a37;
+}
+
+/* Thanh toán */
+.paid { color: #198754; font-weight: 600; font-size: 0.88rem; }
+.unpaid { color: #dc3545; font-weight: 600; font-size: 0.88rem; }
+
+/* Dropdown trạng thái */
+.status-dropdown {
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 5px 8px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  background: #fff;
+}
+
+/* Nền theo trạng thái */
+.status-dropdown.chờ\ xử\ lý { background: #fff3cd; }
+.status-dropdown.đang\ giao { background: #cfe2ff; }
+.status-dropdown.hoàn\ thành { background: #d1e7dd; }
+.status-dropdown.đã\ hủy { background: #f8d7da; }
+
+/* Đơn vị vận chuyển & in hóa đơn */
+.ship-btn,
+.print-btn {
+  border: none;
+  border-radius: 6px;
+  padding: 5px 10px;
+  margin-left: 5px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: 0.2s;
+}
+
+.ship-btn {
+  background: #0d6efd;
+  color: #fff;
+}
+.ship-btn:hover { background: #0b5ed7; }
+
+.print-btn {
+  background: #198754;
+  color: white;
+}
+.print-btn:hover { background: #157347; }
+
+/* Hiệu ứng */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
