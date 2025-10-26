@@ -1,27 +1,18 @@
-import admin from "firebase-admin";
-import { getFirestore } from "firebase-admin/firestore";
-import path from "path";
-import fs from "fs";
-import { fileURLToPath } from "url";
+import { initializeApp } from "firebase/app";
+import { getFirestore } from "firebase/firestore";
+import { getStorage } from "firebase/storage";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const firebaseConfig = {
+  apiKey: "AIzaSyAkgRbC3BiSoH8ZXbIn-XuxR5ByleVW96Y",
+  authDomain: "nhom8tttn-f624a.firebaseapp.com",
+  projectId: "nhom8tttn-f624a",
+  storageBucket: "nhom8tttn-f624a.firebasestorage.app",
+  messagingSenderId: "278658913475",
+  appId: "1:278658913475:web:e538d98207e1d481a13e76"
+};
 
-const serviceAccountPath = path.join(__dirname, "serviceAccountKey.json");
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const storage = getStorage(app);
 
-if (!fs.existsSync(serviceAccountPath)) {
-  console.error("❌ Không tìm thấy file serviceAccountKey.json!");
-  process.exit(1);
-}
-
-const serviceAccount = JSON.parse(fs.readFileSync(serviceAccountPath, "utf8"));
-
-if (!admin.apps.length) {
-  admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount),
-  });
-}
-
-const db = getFirestore();
-console.log("✅ Firebase is configured (connection OK)!");
-export default db;
+export { db, storage };
