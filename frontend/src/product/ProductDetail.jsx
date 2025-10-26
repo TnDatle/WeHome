@@ -1,10 +1,31 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 import { Container, Row, Col, Button, Form } from "react-bootstrap";
+import axios from "axios";
 import "../style/ProductDetail.css";
 
-export default function ProductDetail({ product = {} }) {
+export default function ProductDetail() {
+  const { id } = useParams();
+  const [product, setProduct] = useState(null);
   const [quantity, setQuantity] = useState(1);
+
+  useEffect(() => {
+    const fetchProduct = async () => {
+      try {
+        const res = await axios.get("http://localhost:5000/product");
+        const found = res.data.find((p) => p.id === id);
+        setProduct(found || {});
+      } catch (err) {
+        console.error("🔥 Lỗi khi tải chi tiết sản phẩm:", err);
+      }
+    };
+    fetchProduct();
+  }, [id]);
+
   const show = (v) => (v && v.trim() !== "" ? v : "Chưa cập nhật");
+
+  if (!product)
+    return <p className="text-center text-muted py-5">Đang tải chi tiết...</p>;
 
   return (
     <div className="product-detail py-4">
@@ -14,7 +35,7 @@ export default function ProductDetail({ product = {} }) {
           <Col md={6}>
             <div className="product-gallery">
               <img
-                src={product.image || "/images/no-image.png"}
+                src={product.images?.[0] || "/images/no-image.png"}
                 alt={show(product.name)}
                 className="main-img img-fluid rounded"
               />
@@ -64,7 +85,7 @@ export default function ProductDetail({ product = {} }) {
               <ul className="product-meta mt-3">
                 <li>
                   <strong>Mã sản phẩm:</strong>{" "}
-                  {show(product.code || "Đang cập nhật")}
+                  {show(product.id || "Đang cập nhật")}
                 </li>
                 <li>
                   <strong>Tình trạng:</strong> {show(product.status || "Còn hàng")}
@@ -140,7 +161,6 @@ export default function ProductDetail({ product = {} }) {
               </ul>
             </div>
           </Col>
-          
         </Row>
       </Container>
     </div>
