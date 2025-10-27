@@ -2,9 +2,15 @@ import React, { useState, useEffect } from "react";
 import { Container, Row, Col, Card, Form, Button, Alert } from "react-bootstrap";
 import { Helmet } from "react-helmet-async";
 import { getProvinces, getCommunes } from "../API/Vietnam";
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { doc, setDoc } from "firebase/firestore";
+import { auth, db } from "../config/Firebase";
+import { useNavigate } from "react-router-dom";
 import "../style/Register.css";
 
 export default function Register() {
+  const navigate = useNavigate();
+
   const [form, setForm] = useState({
     fullname: "",
     email: "",
@@ -20,15 +26,14 @@ export default function Register() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
-  // --- Lấy danh sách tỉnh/thành ---
   useEffect(() => {
     getProvinces().then(setProvinces);
   }, []);
 
-  // --- Khi chọn tỉnh ---
   const handleProvinceChange = async (e) => {
     const provinceCode = e.target.value;
-    setForm({ ...form, province: provinceCode, commune: "" });
+    const selectedProvince = provinces.find((p) => p.code === provinceCode);
+    setForm({ ...form, province: selectedProvince?.name || "", commune: "" });
     const data = await getCommunes(provinceCode);
     setCommunes(data);
   };
@@ -37,7 +42,7 @@ export default function Register() {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleRegister = (e) => {
+  const handleRegister = async (e) => {
     e.preventDefault();
     setError("");
     setSuccess("");
@@ -48,7 +53,35 @@ export default function Register() {
       return;
     }
 
-    setSuccess("Đăng ký tài khoản thành công!");
+    try {
+      // 1️⃣ Tạo tài khoản bằng Firebase Auth
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+
+      // 2️⃣ Lưu thông tin vào Firestore
+      await setDoc(doc(db, "Users", user.uid), {
+        fullname,
+        email,
+        phone,
+        address,
+        province,
+        commune,
+        role: "Customer", 
+        createdAt: new Date(),
+      });
+
+      setSuccess("Đăng ký tài khoản thành công!");
+      setTimeout(() => navigate("/auth/Login"), 1500);
+    } catch (err) {
+      console.error(err);
+      if (err.code === "auth/email-already-in-use") {
+        setError("Email này đã được sử dụng!");
+      } else if (err.code === "auth/weak-password") {
+        setError("Mật khẩu phải có ít nhất 6 ký tự!");
+      } else {
+        setError("Đăng ký thất bại, vui lòng thử lại!");
+      }
+    }
   };
 
   return (
@@ -56,53 +89,25 @@ export default function Register() {
       <Helmet>
         <title>Đăng ký tài khoản - WeHome</title>
       </Helmet>
-
       <div className="register-page">
         <Container>
           <Row className="justify-content-center">
-            <Col md={6} sm={10}>
-              <Card className="register-card shadow-sm border-0 p-4">
-                {/* Header */}
-                <div className="register-header text-center mb-4">
-                  <h4 className="fw-bold text-danger mb-1">Tạo tài khoản WeHome</h4>
-                  <p className="text-muted small mb-0">
-                    Hoàn tất thông tin để tiếp tục mua sắm
-                  </p>
-                </div>
+            <Col md={6}>
+              <Card className="register-card p-4 border-0 shadow-sm">
+                <h4 className="text-danger fw-bold text-center mb-3">Tạo tài khoản WeHome</h4>
 
-
-                <div className="alert alert-warning small py-2 mb-3 text-center" role="alert">
-                   Dữ liệu địa chỉ sử dụng <strong>thông tin hành chính sau sáp nhập (2025)</strong>
-                </div>
-
-                {/* Form */}
                 <Form onSubmit={handleRegister}>
                   <Row>
                     <Col md={6}>
                       <Form.Group className="mb-3">
                         <Form.Label>Họ và tên</Form.Label>
-                        <Form.Control
-                          type="text"
-                          name="fullname"
-                          placeholder="Nguyễn Văn A"
-                          value={form.fullname}
-                          onChange={handleChange}
-                          className="form-input-modern"
-                        />
+                        <Form.Control name="fullname" value={form.fullname} onChange={handleChange} />
                       </Form.Group>
                     </Col>
-
                     <Col md={6}>
                       <Form.Group className="mb-3">
                         <Form.Label>Email</Form.Label>
-                        <Form.Control
-                          type="email"
-                          name="email"
-                          placeholder="Email của bạn..."
-                          value={form.email}
-                          onChange={handleChange}
-                          className="form-input-modern"
-                        />
+                        <Form.Control type="email" name="email" value={form.email} onChange={handleChange} />
                       </Form.Group>
                     </Col>
                   </Row>
@@ -111,110 +116,53 @@ export default function Register() {
                     <Col md={6}>
                       <Form.Group className="mb-3">
                         <Form.Label>Mật khẩu</Form.Label>
-                        <Form.Control
-                          type="password"
-                          name="password"
-                          placeholder="Tối thiểu 6 ký tự"
-                          value={form.password}
-                          onChange={handleChange}
-                          className="form-input-modern"
-                        />
+                        <Form.Control type="password" name="password" value={form.password} onChange={handleChange} />
                       </Form.Group>
                     </Col>
-
                     <Col md={6}>
                       <Form.Group className="mb-3">
-                        <Form.Label>Số điện thoại</Form.Label>
-                        <Form.Control
-                          type="tel"
-                          name="phone"
-                          placeholder="VD: 0987654321"
-                          value={form.phone}
-                          onChange={handleChange}
-                          className="form-input-modern"
-                        />
+                        <Form.Label>Điện thoại</Form.Label>
+                        <Form.Control type="tel" name="phone" value={form.phone} onChange={handleChange} />
                       </Form.Group>
                     </Col>
                   </Row>
 
                   <Form.Group className="mb-3">
                     <Form.Label>Địa chỉ</Form.Label>
-                    <Form.Control
-                      type="text"
-                      name="address"
-                      placeholder="Số nhà, tên đường..."
-                      value={form.address}
-                      onChange={handleChange}
-                      className="form-input-modern"
-                    />
+                    <Form.Control name="address" value={form.address} onChange={handleChange} />
                   </Form.Group>
 
                   <Form.Group className="mb-3">
                     <Form.Label>Tỉnh / Thành phố</Form.Label>
-                    <Form.Select
-                      name="province"
-                      value={form.province}
-                      onChange={handleProvinceChange}
-                      className="form-input-modern"
-                    >
+                    <Form.Select onChange={handleProvinceChange}>
                       <option value="">-- Chọn Tỉnh/Thành phố --</option>
                       {provinces.map((p) => (
-                        <option key={p.code} value={p.code}>
-                          {p.name}
-                        </option>
+                        <option key={p.code} value={p.code}>{p.name}</option>
                       ))}
                     </Form.Select>
                   </Form.Group>
 
                   <Form.Group className="mb-3">
                     <Form.Label>Phường / Xã</Form.Label>
-                    <Form.Select
-                      name="commune"
-                      value={form.commune}
-                      onChange={handleChange}
-                      className="form-input-modern"
-                      disabled={!communes.length}
-                    >
-                      <option value="">
-                        {communes.length ? "-- Chọn Phường/Xã --" : "Chọn Tỉnh trước"}
-                      </option>
+                    <Form.Select name="commune" value={form.commune} onChange={handleChange} disabled={!communes.length}>
+                      <option value="">{communes.length ? "-- Chọn Phường/Xã --" : "Chọn Tỉnh trước"}</option>
                       {communes.map((c) => (
-                        <option key={c.code} value={c.name}>
-                          {c.name}
-                        </option>
+                        <option key={c.code} value={c.name}>{c.name}</option>
                       ))}
                     </Form.Select>
                   </Form.Group>
 
-                  <Button
-                    variant="danger"
-                    type="submit"
-                    className="w-100 fw-semibold register-btn-modern mt-2"
-                  >
-                    Đăng ký ngay
-                  </Button>
+                  <Button type="submit" variant="danger" className="w-100 fw-semibold">Đăng ký ngay</Button>
                 </Form>
 
-                {/* Alerts */}
-                {error && (
-                  <Alert variant="danger" className="mt-3 text-center">
-                    {error}
-                  </Alert>
-                )}
-                {success && (
-                  <Alert variant="success" className="mt-3 text-center">
-                    {success}
-                  </Alert>
-                )}
+                {error && <Alert variant="danger" className="mt-3 text-center">{error}</Alert>}
+                {success && <Alert variant="success" className="mt-3 text-center">{success}</Alert>}
 
-                {/* Footer */}
                 <div className="text-center mt-3">
-                  <span className="small">
+                  <small>
                     Đã có tài khoản?{" "}
-                    <a href="Login" className="text-danger fw-semibold">
-                      Đăng nhập
-                    </a>
-                  </span>
+                    <a href="/login" className="text-danger fw-semibold">Đăng nhập</a>
+                  </small>
                 </div>
               </Card>
             </Col>

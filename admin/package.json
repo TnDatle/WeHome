@@ -7,11 +7,17 @@
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.0",
     "@testing-library/user-event": "^13.5.0",
+    "axios": "^1.12.2",
+    "browserify-zlib": "^0.2.0",
     "firebase": "^12.4.0",
+    "https-browserify": "^1.0.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "react-router-dom": "^7.9.4",
     "react-scripts": "5.0.1",
+    "stream-browserify": "^3.0.0",
+    "stream-http": "^3.2.0",
+    "util": "^0.12.5",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
@@ -26,6 +32,11 @@
       "react-app/jest"
     ]
   },
+    "browser": {
+    "http": "stream-http",
+    "https": "https-browserify"
+  },
+
   "browserslist": {
     "production": [
       ">0.2%",

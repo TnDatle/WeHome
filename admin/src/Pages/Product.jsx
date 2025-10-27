@@ -121,7 +121,6 @@ const Product = () => {
 
       {filteredProducts.length === 0 ? <p className="no-data">Không tìm thấy sản phẩm nào.</p> : (
         <table className="product-table">
-          <thead>...{/* same headers */}</thead>
           <tbody>
             {filteredProducts.map((p) => (
               <tr key={p.id}>
@@ -141,7 +140,24 @@ const Product = () => {
         </table>
       )}
 
-      {showAddModal && <AddProduct onSave={handleSaveProduct} onClose={()=>setShowAddModal(false)} product={editingProduct} />}
+      {showAddModal && (
+  <div
+    className="addproduct-backdrop"
+    onClick={() => setShowAddModal(false)} // click nền ngoài để tắt
+  >
+    <div
+      className="addproduct-wrapper"
+      onClick={(e) => e.stopPropagation()} // chặn click bên trong
+    >
+      <AddProduct
+        onSave={handleSaveProduct}
+        onClose={() => setShowAddModal(false)}
+        product={editingProduct}
+      />
+    </div>
+  </div>
+)}
+
 
       {selectedProduct && (
         <div className="product-modal">

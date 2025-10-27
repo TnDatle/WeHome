@@ -1,19 +1,65 @@
 import React, { useState } from "react";
-import { Container, Row, Col, InputGroup, FormControl, Button } from "react-bootstrap";
-import { FaPhoneAlt, FaShoppingCart, FaUser, FaSearch, FaClipboardList, FaQuestionCircle } from "react-icons/fa";
-import { Link ,  useNavigate } from "react-router-dom";
+import {
+  Container,
+  Row,
+  Col,
+  InputGroup,
+  FormControl,
+  Button,
+  Dropdown,
+} from "react-bootstrap";
+import {
+  FaPhoneAlt,
+  FaShoppingCart,
+  FaUser,
+  FaSearch,
+  FaClipboardList,
+  FaQuestionCircle,
+} from "react-icons/fa";
+import { Link, useNavigate } from "react-router-dom";
+import Swal from "sweetalert2";
+import { useUser } from "../context/UserContext"; // ✅ Import Context
 import "../style/Header.css";
 
 export default function Header() {
-  const [keyword, setKeyword] = useState("");
+  const { user, logout } = useUser(); // ✅ lấy thông tin user & hàm logout từ Context
   const navigate = useNavigate();
+  const [keyword, setKeyword] = useState("");
 
+  // 🧩 Đăng xuất có xác nhận
+  const handleLogout = () => {
+    Swal.fire({
+      title: "Bạn có chắc muốn đăng xuất không?",
+      text: "Phiên đăng nhập hiện tại sẽ bị kết thúc.",
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonColor: "#dc3545",
+      cancelButtonColor: "#6c757d",
+      confirmButtonText: "Đăng xuất",
+      cancelButtonText: "Hủy",
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        await logout();
+        Swal.fire({
+          icon: "success",
+          title: "Đã đăng xuất!",
+          text: "Hẹn gặp lại bạn 👋",
+          timer: 1500,
+          showConfirmButton: false,
+        });
+        navigate("/");
+      }
+    });
+  };
+
+  // 🧩 Xử lý tìm kiếm
   const handleSearch = () => {
     const trimmed = keyword.trim();
     if (trimmed !== "") {
       navigate(`/search?q=${encodeURIComponent(trimmed)}`);
     }
   };
+
   return (
     <header className="header-area">
       {/* --- Thanh trên cùng --- */}
@@ -23,12 +69,39 @@ export default function Header() {
             <FaPhoneAlt className="me-2" />
             <strong>Hotline:</strong> 0909.090.909
           </span>
-          <div className="top-links">
-            <a href="#">Liên hệ</a>
-            <a href="#">Tuyển dụng</a>
-            <a href="../auth/Login" className="login-link">
-              <FaUser className="me-1" /> Đăng nhập
-            </a>
+
+          <div className="top-links d-flex align-items-center gap-3">
+            <Link to="#">Liên hệ</Link>
+            <Link to="#">Tuyển dụng</Link>
+
+            {/* 🔹 Nếu chưa đăng nhập */}
+            {!user ? (
+              <Link to="../auth/Login" className="login-link">
+                <FaUser className="me-1" /> Đăng nhập
+              </Link>
+            ) : (
+              // 🔹 Nếu đã đăng nhập
+              <Dropdown align="end">
+                <Dropdown.Toggle
+                  variant="link"
+                  id="user-dropdown"
+                  className="text-white text-decoration-none fw-semibold"
+                >
+                  👤 {user.fullname || user.email}
+                </Dropdown.Toggle>
+
+                <Dropdown.Menu>
+                  <Dropdown.Item onClick={() => navigate("/profile")}>
+                    Thông tin cá nhân
+                  </Dropdown.Item>
+                  <Dropdown.Item onClick={() => navigate("/orders")}>
+                    Đơn hàng của tôi
+                  </Dropdown.Item>
+                  <Dropdown.Divider />
+                  <Dropdown.Item onClick={handleLogout}>Đăng xuất</Dropdown.Item>
+                </Dropdown.Menu>
+              </Dropdown>
+            )}
           </div>
         </Container>
       </div>
@@ -37,12 +110,16 @@ export default function Header() {
       <div className="middle-bar">
         <Container>
           <Row className="align-items-center">
-            <Col md={3} sm={12} className="text-center text-md-start mb-2 mb-md-0">
+            <Col
+              md={3}
+              sm={12}
+              className="text-center text-md-start mb-2 mb-md-0"
+            >
               <Link to="/" className="logo text-decoration-none">
                 <h2 className="m-0">
-                    <span className="logo-icon">W</span>E<span>HOME</span>
+                  <span className="logo-icon">W</span>E<span>HOME</span>
                 </h2>
-                </Link>
+              </Link>
             </Col>
 
             <Col md={6} sm={12}>
@@ -60,19 +137,23 @@ export default function Header() {
               </InputGroup>
             </Col>
 
-            <Col md={3} sm={12} className="icons text-center text-md-end mt-3 mt-md-0">
-              <a href="../pages/Cart" className="icon-item">
+            <Col
+              md={3}
+              sm={12}
+              className="icons text-center text-md-end mt-3 mt-md-0"
+            >
+              <Link to="../pages/Cart" className="icon-item">
                 <FaShoppingCart />
                 <span>Giỏ hàng</span>
-              </a>
-              <a href="../pages/TrackOrder" className="icon-item">
+              </Link>
+              <Link to="../pages/TrackOrder" className="icon-item">
                 <FaClipboardList />
                 <span>Đơn hàng</span>
-              </a>
-              <a href="#" className="icon-item">
+              </Link>
+              <Link to="#" className="icon-item">
                 <FaQuestionCircle />
                 <span>Hỏi đáp</span>
-              </a>
+              </Link>
             </Col>
           </Row>
         </Container>

@@ -1,140 +1,124 @@
-.add-product-modal {
-  position: fixed;
-  top: 0;
-  left: 0;
+/* ======= FORM ADD PRODUCT ======= */
+
+.add-product-container {
   width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.55);
   display: flex;
-  align-items: center;
   justify-content: center;
-  z-index: 3000;
-  backdrop-filter: blur(2px);
+  align-items: center;
 }
 
-.add-product-content {
-  background: #fff;
-  border-radius: 16px;
-  width: 650px;
-  max-width: 95%;
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-  font-family: "Segoe UI", Arial, sans-serif;
-  overflow: hidden;
-  animation: fadeInUp 0.3s ease;
-}
-
-/* --- Header --- */
-.add-product-content h4 {
-  margin: 0;
-  padding: 18px 24px;
-  background: linear-gradient(90deg, #198754, #0d6efd);
-  color: white;
-  text-align: center;
-  font-weight: 600;
-  letter-spacing: 0.5px;
-}
-
-/* --- Body --- */
-.add-product-content form {
-  padding: 25px 30px;
-}
-
-.add-product-content label {
-  display: block;
-  margin-bottom: 6px;
-  font-weight: 600;
-  color: #333;
-  font-size: 0.95rem;
-}
-
-.add-product-content input,
-.add-product-content select,
-.add-product-content textarea {
+.add-product-form {
   width: 100%;
-  padding: 10px 12px;
-  border-radius: 10px;
-  border: 1px solid #ccc;
-  margin-bottom: 16px;
-  font-size: 0.96rem;
-  background: #fafafa;
-  transition: all 0.2s ease;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-}
-
-.add-product-content input:focus,
-.add-product-content select:focus,
-.add-product-content textarea:focus {
-  outline: none;
-  border-color: #198754;
-  background: #fff;
-  box-shadow: 0 0 0 3px rgba(25, 135, 84, 0.15);
-}
-
-/* --- Preview image --- */
-.preview-img {
-  width: 100%;
-  max-height: 260px;
-  border-radius: 10px;
-  margin-bottom: 12px;
-  object-fit: cover;
-  border: 2px solid #eee;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
-  transition: transform 0.25s ease;
-}
-
-.preview-img:hover {
-  transform: scale(1.02);
-}
-
-/* --- Button group --- */
-.btn-group {
+  max-width: 600px;
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 30px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
   display: flex;
-  gap: 12px;
-  margin-top: 8px;
+  flex-direction: column;
+  animation: appear 0.25s ease;
 }
 
-.btn-save,
-.btn-cancel {
+.add-product-form h2 {
+  font-size: 1.4rem;
+  font-weight: 700;
+  text-align: center;
+  color: #222;
+  margin-bottom: 20px;
+}
+
+/* ======= LABEL + INPUT ======= */
+
+.add-product-form label {
+  font-weight: 600;
+  margin-top: 10px;
+  color: #444;
+}
+
+.add-product-form input,
+.add-product-form textarea {
+  width: 100%;
+  margin-top: 6px;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+  font-family: inherit;
+  box-sizing: border-box;
+}
+
+.add-product-form textarea {
+  resize: vertical;
+  min-height: 70px;
+}
+
+/* ======= HÌNH ẢNH ======= */
+
+.preview-images {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.preview-images img {
+  width: 70px;
+  height: 70px;
+  object-fit: cover;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+  transition: 0.2s;
+}
+
+.preview-images img:hover {
+  transform: scale(1.05);
+}
+
+/* ======= NÚT ======= */
+
+.form-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.form-actions button {
   flex: 1;
-  font-size: 1rem;
+  padding: 10px 0;
   border: none;
-  border-radius: 10px;
-  padding: 12px 14px;
+  border-radius: 8px;
   cursor: pointer;
   font-weight: 600;
-  transition: all 0.2s ease-in-out;
+  transition: 0.2s;
 }
 
-.btn-save {
-  background: linear-gradient(90deg, #198754, #0d6efd);
+.form-actions button[type="submit"] {
+  background-color: #dc3545;
   color: white;
-  box-shadow: 0 3px 8px rgba(25, 135, 84, 0.3);
 }
 
-.btn-save:hover {
-  background: linear-gradient(90deg, #157347, #0b5ed7);
-  transform: translateY(-2px);
+.form-actions button[type="submit"]:hover {
+  background-color: #b72c3a;
 }
 
-.btn-cancel {
-  background: #dc3545;
-  color: white;
-  box-shadow: 0 3px 8px rgba(220, 53, 69, 0.25);
+.form-actions button[type="button"] {
+  background-color: #ccc;
+  color: #222;
 }
 
-.btn-cancel:hover {
-  background: #b02a37;
-  transform: translateY(-2px);
+.form-actions button[type="button"]:hover {
+  background-color: #bbb;
 }
 
-/* --- Animation --- */
-@keyframes fadeInUp {
+/* ======= ANIMATION ======= */
+@keyframes appear {
   from {
+    transform: scale(0.95);
     opacity: 0;
-    transform: translateY(25px);
   }
   to {
+    transform: scale(1);
     opacity: 1;
-    transform: translateY(0);
   }
 }

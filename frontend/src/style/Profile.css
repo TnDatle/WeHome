@@ -1,0 +1,16 @@
+.profile-page {
+  background: #f8f9fa;
+  min-height: 100vh;
+  font-family: "Segoe UI", sans-serif;
+}
+
+.profile-page .card {
+  max-width: 800px;
+  margin: auto;
+  border-radius: 14px;
+}
+
+.profile-page h4 {
+  border-left: 4px solid #dc3545;
+  padding-left: 12px;
+}
