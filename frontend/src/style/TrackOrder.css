@@ -40,21 +40,42 @@
 }
 
 .product-list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
+  background: #fff;
+  border-radius: 12px;
+  padding: 10px 15px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
 }
 
-.product-list li {
-  display: flex;
-  justify-content: space-between;
-  border-bottom: 1px solid #eee;
-  padding: 8px 0;
+.product-list img {
+  border-radius: 8px;
+}
+
+.product-list .fw-semibold {
   font-size: 0.95rem;
 }
 
-.product-list li:last-child {
-  border-bottom: none;
+.product-list small {
+  font-size: 0.85rem;
+  color: #777;
+}
+
+
+
+/* ===== ADDRESS FIELDS IN ONE LINE ===== */
+.address-row {
+  display: flex;
+  gap: 15px; /* khoảng cách giữa 2 cột */
+}
+
+.address-row .form-group {
+  flex: 1; /* chia đều hai bên */
+}
+
+@media (max-width: 768px) {
+  .address-row {
+    flex-direction: column; /* xuống dòng ở mobile */
+    gap: 10px;
+  }
 }
 
 @media (max-width: 768px) {

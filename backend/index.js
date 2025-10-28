@@ -2,7 +2,7 @@ import express from "express";
 import cors from "cors";
 import fileUpload from "express-fileupload";
 import productRoutes from "./routes/product.js";
-
+import orderRoutes from "./routes/order.js";
 // Firebase
 import { db } from "./config/firebase.js";
 import { collection, getDocs } from "firebase/firestore";
@@ -13,8 +13,8 @@ app.use(express.json());
 app.use(fileUpload()); // enable file upload
 
 // Routes
-app.use("/product", productRoutes);
-
+app.use("/api/products", productRoutes);
+app.use("/api/orders", orderRoutes);
 app.get("/", (req, res) => res.send("Server OK ✅"));
 
 // Test Firebase connection

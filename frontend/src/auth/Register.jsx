@@ -3,7 +3,7 @@ import { Container, Row, Col, Card, Form, Button, Alert } from "react-bootstrap"
 import { Helmet } from "react-helmet-async";
 import { getProvinces, getCommunes } from "../API/Vietnam";
 import { createUserWithEmailAndPassword } from "firebase/auth";
-import { doc, setDoc } from "firebase/firestore";
+import { collection, getDocs, doc, setDoc } from "firebase/firestore";
 import { auth, db } from "../config/Firebase";
 import { useNavigate } from "react-router-dom";
 import "../style/Register.css";
@@ -54,19 +54,25 @@ export default function Register() {
     }
 
     try {
-      // 1️⃣ Tạo tài khoản bằng Firebase Auth
+      // 1️⃣ Tạo tài khoản Firebase Auth
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
 
-      // 2️⃣ Lưu thông tin vào Firestore
+      // 2️⃣ Sinh UserID tự động
+      const usersSnap = await getDocs(collection(db, "Users"));
+      const newUserID = `WEHOME${String(usersSnap.size + 1).padStart(4, "0")}`;
+
+      // 3️⃣ Lưu thông tin người dùng vào Firestore
       await setDoc(doc(db, "Users", user.uid), {
+        userID: newUserID,
         fullname,
         email,
         phone,
         address,
         province,
         commune,
-        role: "Customer", 
+        role: "Customer",
+        status: "Đang hoạt động", 
         createdAt: new Date(),
       });
 

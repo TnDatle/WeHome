@@ -1,26 +1,41 @@
 export const printInvoice = (order) => {
+  if (!order) return alert("❌ Không có dữ liệu đơn hàng!");
+
   const printWindow = window.open("", "_blank");
+
+  // ✅ Dùng fallback cho dữ liệu
+  const products = order.products || order.items || [];
+  if (!Array.isArray(products) || products.length === 0) {
+    return alert("Đơn hàng này không có sản phẩm để in!");
+  }
+
+  const totalFormatted = (order.total || 0).toLocaleString("vi-VN");
+  const orderDate =
+    order.date ||
+    (order.createdAt
+      ? new Date(order.createdAt).toLocaleString("vi-VN")
+      : "Không rõ");
 
   const html = `
   <html>
     <head>
-      <title>Hóa đơn ${order.code}</title>
+      <title>Hóa đơn ${order.code || order.orderId}</title>
       <style>
         body {
           font-family: "Segoe UI", Arial, sans-serif;
-          padding: 15px 25px;
-          line-height: 1.4;
+          padding: 20px 30px;
           color: #222;
           font-size: 13px;
           max-width: 800px;
           margin: auto;
+          background: #fff;
         }
 
         .header {
           display: flex;
           align-items: flex-start;
           justify-content: space-between;
-          border-bottom: 1px solid #ccc;
+          border-bottom: 2px solid #dc3545;
           padding-bottom: 6px;
           margin-bottom: 10px;
         }
@@ -40,34 +55,37 @@ export const printInvoice = (order) => {
         .shop-info h3 {
           margin: 0;
           color: #dc3545;
-          font-size: 15px;
+          font-size: 16px;
         }
 
         h2 {
           text-align: center;
-          font-size: 16px;
-          margin: 6px 0 12px;
+          font-size: 17px;
+          margin: 10px 0 14px;
+          text-transform: uppercase;
+          color: #333;
         }
 
         table {
           width: 100%;
           border-collapse: collapse;
-          margin-top: 5px;
+          margin-top: 8px;
         }
 
         th, td {
           border: 1px solid #ddd;
-          padding: 6px;
+          padding: 6px 8px;
           text-align: left;
           font-size: 12px;
         }
 
         th {
           background: #f4f4f4;
+          text-align: center;
         }
 
         .summary {
-          margin-top: 8px;
+          margin-top: 10px;
           text-align: right;
           font-weight: bold;
           font-size: 13px;
@@ -102,7 +120,7 @@ export const printInvoice = (order) => {
 
         .qr-code {
           text-align: right;
-          margin-top: 5px;
+          margin-top: 10px;
         }
 
         .qr-code img {
@@ -129,18 +147,18 @@ export const printInvoice = (order) => {
         <div class="shop-info">
           <h3>WeHome</h3>
           <p>Hotline: 0909.090.909</p>
-          <p>www.wehome.vaa.vn</p>
-          <p>CN1: 18A/1 Cộng Hòa, Tân Sơn Nhất, TP.HCM</p>
+          <p>Website: www.wehome.vaa.vn</p>
+          <p>CN1: 18A/1 Cộng Hòa, Tân Bình, TP.HCM</p>
           <p>CN2: 104 Nguyễn Văn Trỗi, Phú Nhuận, TP.HCM</p>
         </div>
       </div>
 
       <h2>HÓA ĐƠN BÁN HÀNG</h2>
 
-      <p><strong>Mã đơn:</strong> ${order.code}</p>
-      <p><strong>Khách hàng:</strong> ${order.customer}</p>
+      <p><strong>Mã đơn:</strong> ${order.code || order.orderId}</p>
+      <p><strong>Khách hàng:</strong> ${order.customer || order.fullname}</p>
       <p><strong>Địa chỉ:</strong> ${order.address}</p>
-      <p><strong>Ngày đặt:</strong> ${order.date}</p>
+      <p><strong>Ngày đặt:</strong> ${orderDate}</p>
       ${
         order.shipping
           ? `<p><strong>Đơn vị vận chuyển:</strong> ${order.shipping.carrier} (${order.shipping.trackingCode})</p>`
@@ -157,28 +175,34 @@ export const printInvoice = (order) => {
           </tr>
         </thead>
         <tbody>
-          ${order.products
+          ${products
             .map(
               (p) => `
               <tr>
-                <td>${p.name}</td>
-                <td>${p.qty}</td>
-                <td>${p.price.toLocaleString()} ₫</td>
-                <td>${(p.qty * p.price).toLocaleString()} ₫</td>
+                <td>${p.name || p.productName || "Không rõ"}</td>
+                <td style="text-align:center;">${p.qty || p.quantity || 1}</td>
+                <td style="text-align:right;">${(p.price || 0).toLocaleString(
+                  "vi-VN"
+                )} ₫</td>
+                <td style="text-align:right;">${(
+                  (p.qty || p.quantity || 1) * (p.price || 0)
+                ).toLocaleString("vi-VN")} ₫</td>
               </tr>`
             )
             .join("")}
         </tbody>
       </table>
 
-      <p class="summary">Tổng cộng: ${order.total.toLocaleString()} ₫</p>
+      <p class="summary">Tổng cộng: ${totalFormatted} ₫</p>
       <p><strong>Thanh toán:</strong> ${
-        order.paid ? "Đã thanh toán" : "Chưa thanh toán"
+        order.paid || order.paymentStatus === "Đã thanh toán"
+          ? "✅ Đã thanh toán"
+          : "❌ Chưa thanh toán"
       }</p>
 
       <div class="qr-code">
         <img src="https://api.qrserver.com/v1/create-qr-code/?data=${
-          order.code
+          order.code || order.orderId
         }&size=80x80" alt="QR"/>
       </div>
 
@@ -194,7 +218,7 @@ export const printInvoice = (order) => {
       </div>
 
       <div class="footer">
-        <p>Cảm ơn quý khách đã mua hàng tại WeHome!</p>
+        <p>Cảm ơn quý khách đã mua hàng tại <strong>WeHome</strong>!</p>
       </div>
     </body>
   </html>

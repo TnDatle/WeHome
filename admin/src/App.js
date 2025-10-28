@@ -8,6 +8,7 @@ import Order from "./Pages/Order";
 import User from "./Pages/User";
 import Setting from "./Pages/Setting";
 import "./Style/index.css";
+import { Toaster } from "react-hot-toast";
 
 function App() {
   return (
@@ -27,6 +28,7 @@ function App() {
           </main>
         </div>
       </div>
+      <Toaster position="top-right" />
     </Router>
   );
 }

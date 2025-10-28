@@ -1,32 +1,19 @@
 import React, { useState } from "react";
-import {
-  Container,
-  Row,
-  Col,
-  InputGroup,
-  FormControl,
-  Button,
-  Dropdown,
-} from "react-bootstrap";
-import {
-  FaPhoneAlt,
-  FaShoppingCart,
-  FaUser,
-  FaSearch,
-  FaClipboardList,
-  FaQuestionCircle,
-} from "react-icons/fa";
+import {Container,Row,Col,InputGroup,FormControl,Button,Dropdown,} from "react-bootstrap";
+import {FaPhoneAlt,FaShoppingCart,FaUser,FaSearch,FaClipboardList,FaQuestionCircle,} from "react-icons/fa";
+import { useCart } from "../context/cartContext";
 import { Link, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
-import { useUser } from "../context/UserContext"; // ✅ Import Context
+import { useUser } from "../context/UserContext";
 import "../style/Header.css";
 
 export default function Header() {
-  const { user, logout } = useUser(); // ✅ lấy thông tin user & hàm logout từ Context
+  const { user, logout } = useUser(); 
   const navigate = useNavigate();
   const [keyword, setKeyword] = useState("");
+  const { cartCount } = useCart();
 
-  // 🧩 Đăng xuất có xác nhận
+
   const handleLogout = () => {
     Swal.fire({
       title: "Bạn có chắc muốn đăng xuất không?",
@@ -87,7 +74,7 @@ export default function Header() {
                   id="user-dropdown"
                   className="text-white text-decoration-none fw-semibold"
                 >
-                  👤 {user.fullname || user.email}
+                  👤 {user.fullname}
                 </Dropdown.Toggle>
 
                 <Dropdown.Menu>
@@ -142,10 +129,15 @@ export default function Header() {
               sm={12}
               className="icons text-center text-md-end mt-3 mt-md-0"
             >
-              <Link to="../pages/Cart" className="icon-item">
-                <FaShoppingCart />
-                <span>Giỏ hàng</span>
-              </Link>
+               <Link to="../pages/Cart" className="icon-item position-relative">
+                  <FaShoppingCart size={22} />
+                  <span>Giỏ hàng</span>
+
+                  {cartCount > 0 && (
+                    <span className="cart-badge">{cartCount}</span>
+                  )}
+                </Link>
+
               <Link to="../pages/TrackOrder" className="icon-item">
                 <FaClipboardList />
                 <span>Đơn hàng</span>

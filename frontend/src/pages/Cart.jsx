@@ -1,54 +1,58 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Container, Row, Col, Card, Button, Table } from "react-bootstrap";
 import { Helmet } from "react-helmet-async";
+import { useCart } from "../context/cartContext";
 import { useNavigate } from "react-router-dom";
+import {
+  getCart,
+  updateQuantity,
+  removeFromCart,
+} from "../utils/cartUtils"; 
 import "../style/Cart.css";
 
 export default function Cart() {
-  // ✅ Dữ liệu mẫu (sau này có thể thay bằng API hoặc localStorage)
-  const [cart, setCart] = useState([
-    {
-      id: 1,
-      name: "Nồi chiên không dầu Lock&Lock",
-      price: 1290000,
-      quantity: 1,
-      image: "https://cdn.tgdd.vn/Products/Images/1983/235502/lock-lock-llaf-112d-1.jpg",
-    },
-    {
-      id: 2,
-      name: "Máy lọc không khí Sharp",
-      price: 2990000,
-      quantity: 1,
-      image: "https://cdn.tgdd.vn/Products/Images/5477/229415/sharp-fp-j40e-w-1.jpg",
-    },
-  ]);
+  const [cart, setCart] = useState([]);
+  const navigate = useNavigate();
+  const { refreshCartCount } = useCart();
+
+
+  // ✅ Lấy giỏ hàng từ localStorage khi load trang
+  useEffect(() => {
+    setCart(getCart());
+  }, []);
 
   // ✅ Tăng giảm số lượng
   const handleQuantityChange = (id, delta) => {
-    setCart((prev) =>
-      prev.map((item) =>
-        item.id === id
-          ? { ...item, quantity: Math.max(1, item.quantity + delta) }
-          : item
+    const updated = updateQuantity(
+      id,
+      Math.max(
+        1,
+        (cart.find((item) => item.id === id)?.quantity || 1) + delta
       )
     );
+    setCart(updated);
+    refreshCartCount(); 
   };
 
-  // ✅ Xóa sản phẩm
   const handleRemove = (id) => {
-    setCart(cart.filter((item) => item.id !== id));
+    const updated = removeFromCart(id);
+    setCart(updated);
+    refreshCartCount(); 
   };
 
-  // ✅ Tổng tiền
+  // Tổng tiền
   const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
+  // Chuyển sang trang Checkout
+  const handleCheckout = () => {
+    if (cart.length === 0) return alert("Giỏ hàng đang trống!");
+    
+    // Lưu giỏ hàng vào localStorage để Checkout đọc lại
+    localStorage.setItem("checkout_cart", JSON.stringify(cart));
 
-    const navigate = useNavigate();
-
-    const handleCheckout = () => {
-    // Chuyển hướng sang trang thanh toán
     navigate("../pages/Checkout");
   };
+
   return (
     <>
       <Helmet>
@@ -57,12 +61,16 @@ export default function Cart() {
 
       <div className="cart-page">
         <Container>
-          <h3 className="text-center mb-4 fw-bold text-danger">Giỏ hàng của bạn</h3>
+          <h3 className="text-center mb-4 fw-bold text-danger">
+            Giỏ hàng của bạn
+          </h3>
 
           {cart.length === 0 ? (
             <Card className="text-center py-5 border-0 shadow-sm">
               <h5>Giỏ hàng của bạn đang trống!</h5>
-              <p className="text-muted small">Hãy thêm sản phẩm để tiếp tục mua sắm nhé.</p>
+              <p className="text-muted small">
+                Hãy thêm sản phẩm để tiếp tục mua sắm nhé.
+              </p>
               <Button variant="danger" href="/">
                 Tiếp tục mua sắm
               </Button>
@@ -100,22 +108,31 @@ export default function Cart() {
                               <Button
                                 variant="light"
                                 size="sm"
-                                onClick={() => handleQuantityChange(item.id, -1)}
+                                onClick={() =>
+                                  handleQuantityChange(item.id, -1)
+                                }
                               >
                                 −
                               </Button>
-                              <span className="qty-value">{item.quantity}</span>
+                              <span className="qty-value">
+                                {item.quantity}
+                              </span>
                               <Button
                                 variant="light"
                                 size="sm"
-                                onClick={() => handleQuantityChange(item.id, 1)}
+                                onClick={() =>
+                                  handleQuantityChange(item.id, 1)
+                                }
                               >
                                 +
                               </Button>
                             </div>
                           </td>
                           <td>
-                            {(item.price * item.quantity).toLocaleString("vi-VN")}₫
+                            {(item.price * item.quantity).toLocaleString(
+                              "vi-VN"
+                            )}
+                            ₫
                           </td>
                           <td>
                             <Button
@@ -147,7 +164,11 @@ export default function Cart() {
                     </span>
                   </div>
                   <hr />
-                  <Button variant="danger" className="w-100 fw-semibold" onClick={handleCheckout}>
+                  <Button
+                    variant="danger"
+                    className="w-100 fw-semibold"
+                    onClick={handleCheckout}
+                  >
                     Tiến hành đặt hàng
                   </Button>
                 </Card>

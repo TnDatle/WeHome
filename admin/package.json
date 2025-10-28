@@ -13,6 +13,7 @@
     "https-browserify": "^1.0.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
+    "react-hot-toast": "^2.6.0",
     "react-router-dom": "^7.9.4",
     "react-scripts": "5.0.1",
     "stream-browserify": "^3.0.0",
@@ -32,11 +33,10 @@
       "react-app/jest"
     ]
   },
-    "browser": {
+  "browser": {
     "http": "stream-http",
     "https": "https-browserify"
   },
-
   "browserslist": {
     "production": [
       ">0.2%",

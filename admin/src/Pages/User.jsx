@@ -1,81 +1,95 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { collection, getDocs, updateDoc, doc, deleteDoc } from "firebase/firestore";
+import { db } from "../Config/firebase-config";
 import "../Style/User.css";
 
 const User = () => {
-  const [users, setUsers] = useState([
-    {
-      id: 1,
-      name: "Nguyễn Văn A",
-      email: "vana@gmail.com",
-      phone: "0909000001",
-      role: "Khách hàng",
-      joined: "2025-08-15",
-      status: "Hoạt động",
-      address: "123 Nguyễn Văn Linh, Quận 7, TP.HCM",
-    },
-    {
-      id: 2,
-      name: "Trần Thị B",
-      email: "tranb@example.com",
-      phone: "0909000002",
-      role: "Khách hàng",
-      joined: "2025-09-02",
-      status: "Bị khóa",
-      address: "45 Nguyễn Trãi, Quận 5, TP.HCM",
-    },
-    {
-      id: 3,
-      name: "Lê Văn C",
-      email: "levc@wehome.vn",
-      phone: "0909000003",
-      role: "Quản trị viên",
-      joined: "2025-05-21",
-      status: "Hoạt động",
-      address: "78 Pasteur, Quận 1, TP.HCM",
-    },
-    {
-      id: 4,
-      name: "Phạm Thị D",
-      email: "phamd@gmail.com",
-      phone: "0909000004",
-      role: "Khách hàng",
-      joined: "2025-10-01",
-      status: "Hoạt động",
-      address: "12 Nguyễn Đình Chiểu, Quận 3, TP.HCM",
-    },
-  ]);
-
+  const [users, setUsers] = useState([]);
   const [filter, setFilter] = useState("");
   const [roleFilter, setRoleFilter] = useState("Tất cả");
   const [selectedUser, setSelectedUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const roleMap = {
+  "Khách hàng": ["khách hàng", "customer", "user"],
+  "Quản trị viên": ["quản trị viên", "admin"],
+};
+
+  // ✅ Lấy danh sách người dùng từ Firestore
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        setLoading(true);
+        const querySnapshot = await getDocs(collection(db, "Users"));
+        const data = querySnapshot.docs.map((d) => ({
+          id: d.id,
+          ...d.data(),
+        }));
+        setUsers(data);
+      } catch (err) {
+        console.error("🔥 Lỗi khi lấy danh sách người dùng:", err);
+        setError("Không thể tải danh sách người dùng!");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUsers();
+  }, []);
 
   // ✅ Lọc danh sách
-  const filteredUsers = users.filter(
-    (u) =>
-      u.name.toLowerCase().includes(filter.toLowerCase()) &&
-      (roleFilter === "Tất cả" || u.role === roleFilter)
-  );
+  const filteredUsers = users.filter((u) => {
+    const nameMatch = u.fullname?.toLowerCase().includes(filter.toLowerCase());
+    const roleMatch =
+      roleFilter === "Tất cả" ||
+      (u.role &&
+        roleMap[roleFilter]?.includes(u.role.toLowerCase()));
+    return nameMatch && roleMatch;
+  });
 
   // ✅ Xóa người dùng
-  const handleDelete = (id) => {
+  const handleDelete = async (id) => {
     if (window.confirm("Bạn có chắc muốn xóa người dùng này không?")) {
-      setUsers(users.filter((u) => u.id !== id));
+      try {
+        await deleteDoc(doc(db, "Users", id));
+        setUsers((prev) => prev.filter((u) => u.id !== id));
+        alert("Đã xóa người dùng!");
+      } catch (err) {
+        console.error("🔥 Lỗi khi xóa người dùng:", err);
+        alert("Không thể xóa người dùng!");
+      }
     }
   };
 
-  // ✅ Khóa / Mở khóa
-  const toggleStatus = (id) => {
-    setUsers((prev) =>
-      prev.map((u) =>
-        u.id === id
-          ? {
-              ...u,
-              status: u.status === "Hoạt động" ? "Bị khóa" : "Hoạt động",
-            }
-          : u
-      )
-    );
+  // ✅ Khóa / Mở khóa người dùng
+  const toggleStatus = async (user) => {
+    const newStatus = user.status === "Hoạt động" ? "Bị khóa" : "Hoạt động";
+    try {
+      await updateDoc(doc(db, "Users", user.id), { status: newStatus });
+      setUsers((prev) =>
+        prev.map((u) =>
+          u.id === user.id ? { ...u, status: newStatus } : u
+        )
+      );
+    } catch (err) {
+      console.error("🔥 Lỗi khi cập nhật trạng thái:", err);
+      alert("Không thể cập nhật trạng thái!");
+    }
   };
+
+  if (loading) {
+    return (
+      <div className="d-flex justify-content-center align-items-center vh-100">
+        <div className="spinner-border text-danger" role="status">
+          <span className="visually-hidden">Đang tải...</span>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return <p className="text-center text-danger mt-5">{error}</p>;
+  }
 
   return (
     <div className="user-container">
@@ -120,7 +134,7 @@ const User = () => {
           <tbody>
             {filteredUsers.map((u) => (
               <tr key={u.id}>
-                <td>{u.name}</td>
+                <td>{u.fullname || u.name}</td>
                 <td>{u.email}</td>
                 <td>{u.phone}</td>
                 <td>{u.role}</td>
@@ -133,10 +147,16 @@ const User = () => {
                     {u.status}
                   </span>
                 </td>
-                <td>{u.joined}</td>
+                <td>
+                  {u.createdAt
+                    ? (u.createdAt.toDate
+                        ? u.createdAt.toDate().toLocaleDateString("vi-VN")
+                        : new Date(u.createdAt).toLocaleDateString("vi-VN"))
+                    : "-"}
+                </td>
                 <td>
                   <button onClick={() => setSelectedUser(u)}>Xem</button>
-                  <button onClick={() => toggleStatus(u.id)}>
+                  <button onClick={() => toggleStatus(u)}>
                     {u.status === "Hoạt động" ? "Khóa" : "Mở khóa"}
                   </button>
                   <button className="danger" onClick={() => handleDelete(u.id)}>
@@ -149,13 +169,13 @@ const User = () => {
         </table>
       )}
 
-      {/* Modal chi tiết */}
+      {/* Modal chi tiết người dùng */}
       {selectedUser && (
         <div className="user-modal">
           <div className="user-modal-content">
             <h5>Chi tiết người dùng</h5>
             <p>
-              <strong>Họ tên:</strong> {selectedUser.name}
+              <strong>Họ tên:</strong> {selectedUser.fullname || selectedUser.name}
             </p>
             <p>
               <strong>Email:</strong> {selectedUser.email}
@@ -167,13 +187,35 @@ const User = () => {
               <strong>Vai trò:</strong> {selectedUser.role}
             </p>
             <p>
-              <strong>Trạng thái:</strong> {selectedUser.status}
+              <strong>Trạng thái:</strong>{" "}
+              <span
+                style={{
+                  color:
+                    selectedUser.status === "Hoạt động" ? "#28a745" : "#999",
+                  fontWeight: 600,
+                }}
+              >
+                {selectedUser.status}
+              </span>
+            </p>
+            <hr />
+            <p>
+              <strong>Địa chỉ:</strong> {selectedUser.address || "—"}
             </p>
             <p>
-              <strong>Địa chỉ:</strong> {selectedUser.address}
+              <strong>Phường/Xã:</strong> {selectedUser.commune || "—"}
             </p>
             <p>
-              <strong>Ngày tham gia:</strong> {selectedUser.joined}
+              <strong>Tỉnh/Thành phố:</strong> {selectedUser.province || "—"}
+            </p>
+            <hr />
+            <p>
+              <strong>Ngày tham gia:</strong>{" "}
+              {selectedUser.createdAt
+                ? (selectedUser.createdAt.toDate
+                    ? selectedUser.createdAt.toDate().toLocaleDateString("vi-VN")
+                    : new Date(selectedUser.createdAt).toLocaleDateString("vi-VN"))
+                : "—"}
             </p>
             <button
               className="close-btn"

@@ -3,18 +3,31 @@ import { useParams } from "react-router-dom";
 import { Container, Row, Col, Button, Form } from "react-bootstrap";
 import axios from "axios";
 import "../style/ProductDetail.css";
+import { addToCart } from "../utils/cartUtils";
+import { useCart } from "../context/cartContext";
+import toast from "react-hot-toast";
 
 export default function ProductDetail() {
   const { id } = useParams();
   const [product, setProduct] = useState(null);
+  const [mainImage, setMainImage] = useState(""); // Ảnh chính hiển thị
   const [quantity, setQuantity] = useState(1);
+  const { refreshCartCount } = useCart();
+
+  // Hàm hiển thị chuỗi có fallback
+  const show = (v) => (v && v.trim() !== "" ? v : "Chưa cập nhật");
 
   useEffect(() => {
     const fetchProduct = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/product");
+        const res = await axios.get("http://localhost:5000/api/products");
         const found = res.data.find((p) => p.id === id);
-        setProduct(found || {});
+        if (found) {
+          setProduct(found);
+          if (found.images?.length > 0) setMainImage(found.images[0]);
+        } else {
+          setProduct({});
+        }
       } catch (err) {
         console.error("🔥 Lỗi khi tải chi tiết sản phẩm:", err);
       }
@@ -22,7 +35,26 @@ export default function ProductDetail() {
     fetchProduct();
   }, [id]);
 
-  const show = (v) => (v && v.trim() !== "" ? v : "Chưa cập nhật");
+  const handleThumbClick = (img) => {
+    // Hiệu ứng mờ nhẹ khi đổi ảnh
+    const main = document.querySelector(".main-img");
+    if (main) {
+      main.classList.add("fade");
+      setTimeout(() => {
+        setMainImage(img);
+        main.classList.remove("fade");
+      }, 100);
+    } else {
+      setMainImage(img);
+    }
+  };
+
+  // Thêm vào giỏ hàng
+  const handleAddToCart = () => {
+  addToCart(product, quantity);
+  refreshCartCount(); 
+  toast.success("🛒 Đã thêm vào giỏ hàng!");
+};
 
   if (!product)
     return <p className="text-center text-muted py-5">Đang tải chi tiết...</p>;
@@ -35,19 +67,22 @@ export default function ProductDetail() {
           <Col md={6}>
             <div className="product-gallery">
               <img
-                src={product.images?.[0] || "/images/no-image.png"}
+                src={mainImage || "/images/no-image.png"}
                 alt={show(product.name)}
                 className="main-img img-fluid rounded"
               />
 
-              <div className="thumb-list d-flex mt-3 gap-2">
+              <div className="thumb-list d-flex mt-3 gap-2 flex-wrap">
                 {product.images?.length > 0 ? (
                   product.images.map((img, i) => (
                     <img
                       key={i}
                       src={img}
                       alt={`Ảnh ${i + 1}`}
-                      className="thumb-item"
+                      onClick={() => handleThumbClick(img)}
+                      className={`thumb-item ${
+                        mainImage === img ? "active" : ""
+                      }`}
                     />
                   ))
                 ) : (
@@ -88,7 +123,8 @@ export default function ProductDetail() {
                   {show(product.id || "Đang cập nhật")}
                 </li>
                 <li>
-                  <strong>Tình trạng:</strong> {show(product.status || "Còn hàng")}
+                  <strong>Tình trạng:</strong>{" "}
+                  {show(product.status || "Còn hàng")}
                 </li>
                 <li>
                   <strong>Danh mục:</strong> {show(product.category)}
@@ -120,7 +156,7 @@ export default function ProductDetail() {
               </div>
 
               <div className="mt-4 d-flex gap-3">
-                <Button variant="danger" className="btn-cart flex-fill">
+                <Button variant="danger" className="btn-cart flex-fill" onClick={handleAddToCart}>
                   🛒 Thêm vào giỏ
                 </Button>
                 <Button variant="success" className="btn-buy flex-fill">

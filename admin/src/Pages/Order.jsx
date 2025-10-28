@@ -1,164 +1,119 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 import "../Style/Order.css";
 import { printInvoice } from "../Components/InvoicePrint";
 
-
 const Order = () => {
-  const [orders, setOrders] = useState([
-    {
-      id: 1,
-      code: "DH001",
-      customer: "Nguyễn Văn A",
-      date: "2025-10-22",
-      total: 1250000,
-      status: "Hoàn thành",
-      paid: true,
-      address: "123 Nguyễn Văn Linh, Quận 7, TP.HCM",
-      note: "Giao buổi sáng",
-      products: [
-        { name: "Nồi cơm điện Sharp", qty: 1, price: 850000 },
-        { name: "Bếp gas mini", qty: 1, price: 400000 },
-      ],
-      shipping: {
-        carrier: "Giao Hàng Nhanh",
-        trackingCode: "GHN123456789",
-        currentStatus: "delivered",
-      },
-    },
-    {
-      id: 2,
-      code: "DH002",
-      customer: "Trần Thị B",
-      date: "2025-10-21",
-      total: 499000,
-      status: "Đang giao",
-      paid: false,
-      address: "45 Nguyễn Trãi, Quận 5, TP.HCM",
-      note: "Gọi trước khi giao",
-      products: [{ name: "Bình đun siêu tốc", qty: 1, price: 499000 }],
-      shipping: {
-        carrier: "Giao Hàng Tiết Kiệm",
-        trackingCode: "GHTK987654321",
-        currentStatus: "in_transit",
-      },
-    },
-    {
-      id: 3,
-      code: "DH003",
-      customer: "Lê Văn C",
-      date: "2025-10-23",
-      total: 850000,
-      status: "Chờ xử lý",
-      paid: false,
-      address: "78 Pasteur, Quận 1, TP.HCM",
-      note: "",
-      products: [{ name: "Máy sấy tóc Philips", qty: 2, price: 425000 }],
-      shipping: null,
-    },
-  ]);
-
-  const [filter, setFilter] = useState("");
-  const [dateFilter, setDateFilter] = useState("");
-  const [statusFilter, setStatusFilter] = useState("Tất cả trạng thái");
+  const [orders, setOrders] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [selectedOrder, setSelectedOrder] = useState(null);
-  const [currentPage, setCurrentPage] = useState(1);
-  const ordersPerPage = 5;
 
-  // ✅ Hàm tạo mã vận đơn ngẫu nhiên (giả lập)
-  const generateTrackingCode = () => {
-    const prefix = ["GHN", "GHTK", "VNPOST"];
-    const randomPrefix = prefix[Math.floor(Math.random() * prefix.length)];
-    const randomNumber = Math.floor(100000000 + Math.random() * 900000000);
-    return `${randomPrefix}${randomNumber}`;
+  const [search, setSearch] = useState("");
+  const [statusFilter, setStatusFilter] = useState("Tất cả");
+  const [dateFilter, setDateFilter] = useState("");
+
+  // Lấy danh sách đơn hàng
+  const fetchOrders = async () => {
+    try {
+      const res = await axios.get("http://localhost:5000/api/orders");
+      setOrders(res.data);
+    } catch (err) {
+      console.error("🔥 Lỗi khi lấy đơn hàng:", err);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  // ✅ Tạo vận chuyển (giả lập)
-  const handleCreateShipment = (id) => {
-    setOrders((prev) =>
-      prev.map((o) => {
-        if (o.id !== id) return o;
+  useEffect(() => {
+    fetchOrders();
+  }, []);
 
-        const trackingCode = generateTrackingCode();
-
-        return {
-          ...o,
-          status: "Đang giao",
-          shipping: {
-            carrier: trackingCode.startsWith("GHN")
-              ? "Giao Hàng Nhanh"
-              : trackingCode.startsWith("GHTK")
-              ? "Giao Hàng Tiết Kiệm"
-              : "VNPost",
-            trackingCode,
-            currentStatus: "picked_up",
-          },
-        };
-      })
-    );
-    alert("✅ Đã tạo đơn vận chuyển và chuyển sang trạng thái 'Đang giao'");
+  // Cập nhật trạng thái
+  const handleStatusChange = async (id, newStatus) => {
+    try {
+      await axios.patch(`http://localhost:5000/api/orders/${id}/status`, {
+        status: newStatus,
+      });
+      await fetchOrders(); // gọi lại danh sách để đảm bảo dữ liệu mới nhất
+    } catch (err) {
+      console.error("🔥 Lỗi cập nhật trạng thái:", err);
+    }
   };
 
-  // ✅ Cập nhật trạng thái đơn hàng (giả lập)
-  const handleStatusChange = (id, newStatus) => {
-    setOrders((prev) =>
-      prev.map((o) => {
-        if (o.id !== id) return o;
 
-        let updatedPaid = o.paid;
+  // Tạo vận chuyển
+  const handleCreateShipment = async (id) => {
+    try {
+      const carrier = prompt("Nhập đơn vị vận chuyển (GHN / GHTK / VNPOST):", "GHN");
+      if (!carrier) return;
 
-        // ✅ Logic đồng bộ thanh toán
-        if (newStatus === "Hoàn thành") updatedPaid = true;
-        if (newStatus === "Đã hủy") updatedPaid = false;
+      const res = await axios.patch(`http://localhost:5000/api/orders/${id}/shipping`, {
+        carrier,
+      });
 
-        return { ...o, status: newStatus, paid: updatedPaid };
-      })
-    );
+      setOrders((prev) =>
+        prev.map((o) =>
+          o.id === id
+            ? {
+                ...o,
+                status: res.data.status,
+                shipping: {
+                  carrier: res.data.carrier || carrier,
+                  trackingCode: res.data.trackingCode,
+                  currentStatus: "picked_up",
+                },
+              }
+            : o
+        )
+      );
+      alert(`Đã tạo vận chuyển thành công! Mã vận đơn: ${res.data.trackingCode}`);
+    } catch (err) {
+      console.error("🔥 Lỗi tạo vận chuyển:", err.response?.data || err.message);
+      alert("Không thể tạo đơn vận chuyển, vui lòng thử lại!");
+    }
   };
 
-  // ✅ Lọc
+  // Xóa đơn hàng
+  const handleDelete = async (id) => {
+    if (!window.confirm("Bạn có chắc muốn xóa đơn hàng này?")) return;
+    try {
+      await axios.delete(`http://localhost:5000/api/orders/${id}`);
+      setOrders((prev) => prev.filter((o) => o.id !== id));
+    } catch (err) {
+      console.error("🔥 Lỗi khi xóa đơn hàng:", err);
+    }
+  };
+
+  // Lọc đơn hàng
   const filteredOrders = orders
-    .filter((o) => o.customer.toLowerCase().includes(filter.toLowerCase()))
-    .filter((o) => (dateFilter ? o.date.startsWith(dateFilter) : true))
-    .filter((o) =>
-      statusFilter === "Tất cả trạng thái" ? true : o.status === statusFilter
-    );
-
-  const totalPages = Math.ceil(filteredOrders.length / ordersPerPage);
-  const indexOfLastOrder = currentPage * ordersPerPage;
-  const indexOfFirstOrder = indexOfLastOrder - ordersPerPage;
-  const currentOrders = filteredOrders.slice(
-    indexOfFirstOrder,
-    indexOfLastOrder
-  );
+    .filter((o) => o.fullname?.toLowerCase().includes(search.toLowerCase()))
+    .filter((o) => (statusFilter === "Tất cả" ? true : o.status === statusFilter))
+    .filter((o) => (dateFilter ? o.createdAt?.slice(0, 10) === dateFilter : true));
 
   return (
     <div className="order-container">
       <div className="order-header">
         <h4>Quản lý đơn hàng</h4>
-        <div className="order-actions">
-          <button className="btn-refresh">🔄 Làm mới</button>
-          <button className="btn-add">➕ Thêm đơn hàng</button>
-        </div>
+        <button className="btn-refresh" onClick={fetchOrders}>
+          🔄 Làm mới
+        </button>
       </div>
 
       {/* Bộ lọc */}
       <div className="order-filter">
         <input
           type="text"
-          placeholder="🔍 Tìm theo khách hàng..."
-          value={filter}
-          onChange={(e) => setFilter(e.target.value)}
+          placeholder="🔍 Tìm theo tên khách..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
         />
         <input
           type="date"
           value={dateFilter}
           onChange={(e) => setDateFilter(e.target.value)}
         />
-        <select
-          value={statusFilter}
-          onChange={(e) => setStatusFilter(e.target.value)}
-        >
-          <option>Tất cả trạng thái</option>
+        <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
+          <option>Tất cả</option>
           <option>Chờ xử lý</option>
           <option>Đang giao</option>
           <option>Hoàn thành</option>
@@ -166,168 +121,122 @@ const Order = () => {
         </select>
       </div>
 
-      {/* Bảng đơn hàng */}
-      {filteredOrders.length === 0 ? (
-        <p className="no-data">Không tìm thấy đơn hàng nào.</p>
+      {loading ? (
+        <p>Đang tải đơn hàng...</p>
+      ) : filteredOrders.length === 0 ? (
+        <p className="no-data">Không có đơn hàng nào phù hợp.</p>
       ) : (
-        <>
-          <table className="order-table">
-            <thead>
-              <tr>
-                <th>Mã đơn</th>
-                <th>Khách hàng</th>
-                <th>Ngày đặt</th>
-                <th>Tổng tiền</th>
-                <th>Trạng thái</th>
-                <th>Thanh toán</th>
-                <th>Thao tác</th>
-              </tr>
-            </thead>
-            <tbody>
-              {currentOrders.map((o) => {
-                const isLocked =
-                  o.status === "Hoàn thành" || o.status === "Đã hủy";
-                return (
-                  <tr key={o.id}>
-                    <td>{o.code}</td>
-                    <td>{o.customer}</td>
-                    <td>{o.date}</td>
-                    <td>{o.total.toLocaleString()} ₫</td>
-                    <td>
-                      <select
-                        value={o.status}
-                        onChange={(e) =>
-                          handleStatusChange(o.id, e.target.value)
-                        }
-                        className={`status-dropdown ${o.status.toLowerCase()}`}
-                        disabled={isLocked}
+        <table className="order-table">
+          <thead>
+            <tr>
+              <th>Mã đơn</th>
+              <th>Khách hàng</th>
+              <th>Ngày đặt</th>
+              <th>Tổng tiền</th>
+              <th>Trạng thái</th>
+              <th>Thanh toán</th>
+              <th>Thao tác</th>
+            </tr>
+          </thead>
+          <tbody>
+            {filteredOrders.map((o) => {
+              const locked = o.status === "Hoàn thành" || o.status === "Đã hủy";
+              return (
+                <tr key={o.id}>
+                  <td>{o.orderId}</td>
+                  <td>{o.fullname}</td>
+                  <td>{o.createdAt ? o.createdAt.slice(0, 10) : "—"}</td>
+                  <td>{o.total.toLocaleString("vi-VN")} ₫</td>
+                  <td>
+                    <select
+                      value={o.status}
+                      onChange={(e) => handleStatusChange(o.id, e.target.value)}
+                      className={`status-dropdown ${o.status?.toLowerCase()}`}
+                      disabled={locked} // ✅ không cho đổi nếu hoàn thành/hủy
+                    >
+                      <option>Chờ xử lý</option>
+                      <option>Đang giao</option>
+                      <option>Hoàn thành</option>
+                      <option>Đã hủy</option>
+                    </select>
+                  </td>
+                  <td>
+                    {o.paymentStatus === "Đã thanh toán" ? (
+                      <span className="paid">Đã thanh toán</span>
+                    ) : (
+                      <span className="unpaid">Chưa thanh toán</span>
+                    )}
+                  </td>
+                  <td>
+                    <button onClick={() => setSelectedOrder(o)}>Xem</button>
+                    {o.status === "Chờ xử lý" && (
+                      <button
+                        className="ship-btn"
+                        onClick={() => handleCreateShipment(o.id)}
                       >
-                        <option>Chờ xử lý</option>
-                        <option>Đang giao</option>
-                        <option>Hoàn thành</option>
-                        <option>Đã hủy</option>
-                      </select>
-                    </td>
-                    <td>
-                      {o.paid ? (
-                        <span className="paid">Đã thanh toán</span>
-                      ) : (
-                        <span className="unpaid">Chưa thanh toán</span>
-                      )}
-                    </td>
-                    <td>
-                      <button onClick={() => setSelectedOrder(o)}>Xem</button>
-
-                      {o.status === "Chờ xử lý" && (
-                        <button
-                          className="ship-btn"
-                          onClick={() => handleCreateShipment(o.id)}
-                        >
-                          🚚 Tạo vận chuyển
-                        </button>
-                      )}
-
-                      <button className="danger">Xóa</button>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-
-          {/* Phân trang */}
-          <div className="pagination">
-            <button
-              onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
-              disabled={currentPage === 1}
-            >
-              ← Trước
-            </button>
-            <span>
-              Trang {currentPage} / {totalPages}
-            </span>
-            <button
-              onClick={() =>
-                setCurrentPage((p) => Math.min(p + 1, totalPages))
-              }
-              disabled={currentPage === totalPages}
-            >
-              Sau →
-            </button>
-          </div>
-        </>
+                        Tạo vận chuyển
+                      </button>
+                    )}
+                    <button className="danger" onClick={() => handleDelete(o.id)}>
+                      Xóa
+                    </button>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
       )}
 
       {/* Modal chi tiết */}
       {selectedOrder && (
         <div className="order-modal">
           <div className="order-modal-content">
-            <h5>🧾 Chi tiết đơn hàng {selectedOrder.code}</h5>
-            <p>
-              <strong>Khách hàng:</strong> {selectedOrder.customer}
-            </p>
-            <p>
-              <strong>Địa chỉ:</strong> {selectedOrder.address}
-            </p>
-            <p>
-              <strong>Ghi chú:</strong> {selectedOrder.note || "Không có"}
-            </p>
+            <h5>Chi tiết đơn hàng {selectedOrder.orderId}</h5>
+            <p><strong>Khách hàng:</strong> {selectedOrder.fullname}</p>
+            <p><strong>Email:</strong> {selectedOrder.email || "—"}</p>
+            <p><strong>SĐT:</strong> {selectedOrder.phone}</p>
+            <p><strong>Địa chỉ:</strong> {selectedOrder.address}, {selectedOrder.commune}, {selectedOrder.province}</p>
+            <p><strong>Ghi chú:</strong> {selectedOrder.note || "Không có"}</p>
+            <p><strong>Ngày đặt:</strong> {selectedOrder.createdAt?.slice(0, 10)}</p>
+            <p><strong>Phương thức thanh toán:</strong> {selectedOrder.payment}</p>
+            <p><strong>Trạng thái thanh toán:</strong> {selectedOrder.paymentStatus}</p>
+            <p><strong>Trạng thái đơn:</strong> {selectedOrder.status}</p>
 
             <h6>Danh sách sản phẩm:</h6>
             <ul>
-              {selectedOrder.products.map((p, i) => (
+              {selectedOrder.items?.map((p, i) => (
                 <li key={i}>
-                  {p.name} — {p.qty} x {p.price.toLocaleString()} ₫
+                  {p.name} — {p.quantity} × {p.price.toLocaleString("vi-VN")}₫
                 </li>
               ))}
             </ul>
 
-            <p>
-              <strong>Tổng tiền:</strong>{" "}
-              {selectedOrder.total.toLocaleString()} ₫
-            </p>
-            <p>
-              <strong>Thanh toán:</strong>{" "}
-              {selectedOrder.paid ? "✅ Đã thanh toán" : "❌ Chưa thanh toán"}
-            </p>
-
-            {/* ✅ Thông tin vận chuyển */}
             {selectedOrder.shipping && (
               <>
                 <hr />
-                <p>
-                  <strong>Đơn vị vận chuyển:</strong>{" "}
-                  {selectedOrder.shipping.carrier}
-                </p>
-                <p>
-                  <strong>Mã vận đơn:</strong>{" "}
-                  {selectedOrder.shipping.trackingCode}
-                </p>
-                <p>
-                  <strong>Trạng thái giao:</strong>{" "}
+                <h6>Đơn vị vận chuyển:</h6>
+                <p><strong>Đơn vị:</strong> {selectedOrder.shipping.carrier}</p>
+                <p><strong>Mã vận đơn:</strong> {selectedOrder.shipping.trackingCode}</p>
+                <p><strong>Trạng thái giao:</strong>
                   {selectedOrder.shipping.currentStatus === "picked_up"
-                    ? "📦 Đã lấy hàng"
+                    ? " Đã lấy hàng"
                     : selectedOrder.shipping.currentStatus === "in_transit"
-                    ? "🚚 Đang giao"
+                    ? " Đang giao"
                     : selectedOrder.shipping.currentStatus === "delivered"
-                    ? "✅ Đã giao thành công"
-                    : "Chưa giao"}
+                    ? " Đã giao thành công"
+                    : " — "}
                 </p>
               </>
             )}
 
-            <button
-              className="close-btn"
-              onClick={() => setSelectedOrder(null)}
-            >
-              Đóng
-            </button>
-            <button
-              className="print-btn"
-              onClick={() => printInvoice(selectedOrder)}
-            >
-               In hóa đơn
-            </button>
+            <hr />
+            <p><strong>Tổng tiền:</strong> {selectedOrder.total.toLocaleString("vi-VN")} ₫</p>
+
+            <div className="modal-buttons">
+              <button className="print-btn" onClick={() => printInvoice(selectedOrder)}>🖨 In hóa đơn</button>
+              <button className="close-btn" onClick={() => setSelectedOrder(null)}>Đóng</button>
+            </div>
           </div>
         </div>
       )}

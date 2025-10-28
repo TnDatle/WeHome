@@ -1,138 +1,177 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import toast from "react-hot-toast";
 import "../Style/Product.css";
 import AddProduct from "../Components/AddProduct";
 
 const Product = () => {
   const [showAddModal, setShowAddModal] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
-  const [selectedProduct, setSelectedProduct] = useState(null);
   const [products, setProducts] = useState([]);
   const [filter, setFilter] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("Tất cả");
   const [isSaving, setIsSaving] = useState(false);
 
+  const API_BASE = "http://localhost:5000/api/products";
+
+  // Lấy danh sách sản phẩm
+  useEffect(() => { fetchProducts(); }, []);
+
   const fetchProducts = async () => {
-    try {
-      const res = await axios.get("http://localhost:5000/product");
-      const formatted = res.data.map((p) => ({
-        id: p.id,
-        name: p.name || "",
-        category: p.category || "",
-        price: p.price || 0,
-        stock: p.stock || 0,
-        image: p.images && p.images.length > 0 ? p.images[0] : null,
-        description: p.description || "",
-        images: p.images || [],
-      }));
-      setProducts(formatted);
-    } catch (err) {
-      console.error("Lỗi load products:", err);
+  try {
+    const res = await axios.get(API_BASE);
+    console.log("✅ Response data:", res.data);
+    setProducts(
+      Array.isArray(res.data)
+        ? res.data.map((p) => ({
+            id: p.id,
+            name: p.name,
+            category: p.category,
+            price: p.price,
+            description: p.description,
+            images: p.images || [],
+          }))
+        : []
+    );
+  } catch (err) {
+    console.error("❌ AxiosError:", err.message);
+    if (err.response) {
+      console.error("➡️ Status:", err.response.status);
+      console.error("➡️ Data:", err.response.data);
+    } else if (err.request) {
+      console.error("➡️ Request:", err.request);
+    } else {
+      console.error("➡️ Message:", err.message);
     }
-  };
+  }
+};
 
-  useEffect(() => {
-    fetchProducts();
-  }, []);
-
-  const filteredProducts = products.filter(
-    (p) => p.name?.toLowerCase().includes(filter.toLowerCase()) &&
-           (categoryFilter === "Tất cả" || p.category === categoryFilter)
-  );
-
-  const handleDelete = async (id) => {
-    if (!window.confirm("Bạn có chắc muốn xóa sản phẩm này không?")) return;
-    try {
-      await axios.delete(`http://localhost:5000/product/${id}`);
-      setProducts((prev) => prev.filter((x) => x.id !== id));
-    } catch (err) {
-      console.error("Lỗi xóa:", err);
-      alert("Xóa thất bại");
-    }
-  };
-
-  // IMPORTANT: Product.jsx là nơi duy nhất gọi API
   const handleSaveProduct = async (formObj) => {
     if (isSaving) return;
     setIsSaving(true);
+
+    // 🔹 Hiển thị tiến trình lưu
+    toast.loading("Đang lưu sản phẩm...", { id: "saving" });
+
+    // 🔹 Tạo sản phẩm tạm để hiển thị Optimistic UI
+    const tempId = "temp-" + Date.now();
+    const tempProduct = {
+      ...formObj,
+      id: tempId,
+      images: formObj.images.map((img) =>
+        typeof img === "string" ? img : img.preview
+      ),
+      isTemp: true,
+    };
+    setProducts((prev) => [...prev, tempProduct]);
+
     try {
       const fd = new FormData();
       fd.append("name", formObj.name);
       fd.append("category", formObj.category);
-      fd.append("price", Number(formObj.price));
+      fd.append("price", formObj.price);
       fd.append("description", formObj.description);
+      fd.append("color", formObj.color || "");
+      fd.append("material", formObj.material || "");
+      fd.append("size", formObj.size || "");
 
-      // ảnh mới: file objects
       (formObj.images || []).forEach((img) => {
         if (typeof img === "object" && img.file) fd.append("images", img.file);
       });
 
-      // ảnh cũ: string URLs
       const existing = (formObj.images || []).filter((img) => typeof img === "string");
       fd.append("existingImages", JSON.stringify(existing));
 
-      // Decide POST or PUT
-      if (formObj.productId) {
-        await axios.put(`http://localhost:5000/product/${formObj.productId}`, fd, {
+      let res;
+      if (formObj.id) {
+        res = await axios.put(`${API_BASE}/${formObj.id}`, fd, {
           headers: { "Content-Type": "multipart/form-data" },
         });
+        toast.success("✅ Cập nhật sản phẩm thành công", { id: "saving" });
+        setProducts((prev) =>
+          prev.map((p) => (p.id === formObj.id ? res.data : p))
+        );
       } else {
-        await axios.post("http://localhost:5000/product", fd, {
+        res = await axios.post(API_BASE, fd, {
           headers: { "Content-Type": "multipart/form-data" },
         });
+
+        toast.success("🎉 Thêm sản phẩm thành công", { id: "saving" });
+        setProducts((prev) =>
+          prev.map((p) => (p.id === tempId ? res.data : p))
+        );
       }
 
-      await fetchProducts();
       setShowAddModal(false);
       setEditingProduct(null);
     } catch (err) {
-      console.error("Lỗi lưu:", err);
-      alert("Lưu thất bại");
+      console.error("❌ Lỗi lưu:", err);
+      toast.error("Không thể lưu sản phẩm", { id: "saving" });
+      // Xóa sản phẩm tạm nếu lỗi
+      setProducts((prev) => prev.filter((p) => p.id !== tempId));
     } finally {
       setIsSaving(false);
     }
   };
 
+
+  const handleDelete = async (id) => {
+    if (!window.confirm("Bạn có chắc muốn xóa sản phẩm này không?")) return;
+    try {
+      await axios.delete(`${API_BASE}/${id}`);
+      setProducts((prev) => prev.filter((p) => p.id !== id));
+      toast.success("🗑 Xóa sản phẩm thành công");
+    } catch (err) {
+      console.error("Lỗi xóa:", err);
+      toast.error("Không thể xóa sản phẩm");
+    }
+  };
+
+  const filteredProducts = products.filter(
+    (p) =>
+      p.name.toLowerCase().includes(filter.toLowerCase()) &&
+      (categoryFilter === "Tất cả" || p.category === categoryFilter)
+  );
+
   return (
     <div className="product-container">
       <div className="product-header">
         <h4>Quản lý sản phẩm</h4>
-        <div className="product-actions">
-          <button onClick={() => { setEditingProduct(null); setShowAddModal(true); }}>➕ Thêm sản phẩm</button>
-        </div>
+        <button onClick={() => { setEditingProduct(null); setShowAddModal(true); }}>
+          ➕ Thêm sản phẩm
+        </button>
       </div>
 
       <div className="product-filter">
-        <input placeholder="🔍 Tìm sản phẩm..." value={filter} onChange={(e)=>setFilter(e.target.value)} />
-        <select value={categoryFilter} onChange={(e)=>setCategoryFilter(e.target.value)}>
+        <input placeholder="🔍 Tìm sản phẩm..." value={filter} onChange={(e) => setFilter(e.target.value)} />
+        <select value={categoryFilter} onChange={(e) => setCategoryFilter(e.target.value)}>
           <option>Tất cả</option>
-          <option>Thiết bị nhà bếp</option>
-          <option>Máy lọc không khí</option>
-          <option>Đèn & chiếu sáng</option>
-          <option>Dụng cụ vệ sinh</option>
-          <option>Đồ dùng phòng tắm</option>
-          <option>Đồ điện gia dụng nhỏ</option>
-          <option>Chăm sóc cá nhân</option>
-          <option>Thiết bị giặt sấy</option>
-          <option>Gia dụng thông minh</option>
-          <option>Nội thất & trang trí</option>
+          {["Thiết bị nhà bếp","Máy lọc không khí","Đèn & chiếu sáng","Dụng cụ vệ sinh","Đồ dùng phòng tắm","Đồ điện gia dụng nhỏ","Chăm sóc cá nhân","Thiết bị giặt sấy","Gia dụng thông minh","Nội thất & trang trí"].map(cat => (
+            <option key={cat}>{cat}</option>
+          ))}
         </select>
       </div>
 
-      {filteredProducts.length === 0 ? <p className="no-data">Không tìm thấy sản phẩm nào.</p> : (
+      {filteredProducts.length === 0 ? (
+        <p className="no-data">Không tìm thấy sản phẩm nào.</p>
+      ) : (
         <table className="product-table">
           <tbody>
             {filteredProducts.map((p) => (
               <tr key={p.id}>
-                <td>{p.image ? <img src={p.image} alt={p.name} className="product-img" /> : <div className="no-img">Không có ảnh</div>}</td>
+                <td>
+                  {p.images[0] ? (
+                    <img src={p.images[0]} alt={p.name} className="product-img" />
+                  ) : (
+                    <div className="no-img">Không có ảnh</div>
+                  )}
+                </td>
                 <td>{p.name}</td>
                 <td>{p.category}</td>
-                <td>{p.price?.toLocaleString()} ₫</td>
-                <td>{p.stock}</td>
+                <td>{p.price.toLocaleString()} ₫</td>
                 <td>
-                  <button onClick={()=>{ setSelectedProduct(p); }}>👁 Xem</button>
-                  <button onClick={()=>{ setEditingProduct(p); setShowAddModal(true); }}>✏️ Sửa</button>
-                  <button className="danger" onClick={()=>handleDelete(p.id)}>🗑 Xóa</button>
+                  <button onClick={() => { setEditingProduct(p); setShowAddModal(true); }}>✏️ Sửa</button>
+                  <button className="danger" onClick={() => handleDelete(p.id)}>🗑 Xóa</button>
                 </td>
               </tr>
             ))}
@@ -141,35 +180,9 @@ const Product = () => {
       )}
 
       {showAddModal && (
-  <div
-    className="addproduct-backdrop"
-    onClick={() => setShowAddModal(false)} // click nền ngoài để tắt
-  >
-    <div
-      className="addproduct-wrapper"
-      onClick={(e) => e.stopPropagation()} // chặn click bên trong
-    >
-      <AddProduct
-        onSave={handleSaveProduct}
-        onClose={() => setShowAddModal(false)}
-        product={editingProduct}
-      />
-    </div>
-  </div>
-)}
-
-
-      {selectedProduct && (
-        <div className="product-modal">
-          <div className="product-modal-content">
-            <h5>Chi tiết sản phẩm</h5>
-            {selectedProduct.image ? <img src={selectedProduct.image} alt={selectedProduct.name} className="product-modal-img" /> : <div className="no-img">Không có ảnh</div>}
-            <p><strong>Tên:</strong> {selectedProduct.name}</p>
-            <p><strong>Danh mục:</strong> {selectedProduct.category}</p>
-            <p><strong>Giá:</strong> {selectedProduct.price?.toLocaleString()} ₫</p>
-            <p><strong>Tồn kho:</strong> {selectedProduct.stock}</p>
-            <p><strong>Mô tả:</strong> {selectedProduct.description}</p>
-            <button className="close-btn" onClick={()=>setSelectedProduct(null)}>Đóng</button>
+        <div className="addproduct-backdrop" onClick={() => setShowAddModal(false)}>
+          <div className="addproduct-wrapper" onClick={(e) => e.stopPropagation()}>
+            <AddProduct onSave={handleSaveProduct} onClose={() => setShowAddModal(false)} product={editingProduct} />
           </div>
         </div>
       )}
