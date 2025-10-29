@@ -71,6 +71,18 @@
   margin-bottom: 20px;
 }
 
+.chart-card table {
+  border-radius: 10px;
+  overflow: hidden;
+  background: #fff;
+}
+
+.chart-card tbody tr:hover {
+  background: #f2f4f6;
+  transition: background 0.2s ease;
+}
+
+
 /* ======================== PIE CHART ======================== */
 .chart-pie {
   width: 200px;

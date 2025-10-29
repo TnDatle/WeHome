@@ -1,4 +1,3 @@
-// 📁 src/pages/Products.jsx
 import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
@@ -8,7 +7,9 @@ import "../style/Product.css";
 export default function Products() {
   const { slug } = useParams();
   const [products, setProducts] = useState([]);
+  const [displayed, setDisplayed] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [sort, setSort] = useState("");
 
   const categories = [
     { name: "Thiết bị nhà bếp", icon: "🍳", slug: "kitchen" },
@@ -23,7 +24,6 @@ export default function Products() {
     { name: "Nội thất & trang trí", icon: "🪑", slug: "furniture" },
   ];
 
-  // 🗺️ Map giữa category tiếng Việt và slug
   const slugMap = {
     "Thiết bị nhà bếp": "kitchen",
     "Máy lọc không khí": "air-purifier",
@@ -47,12 +47,12 @@ export default function Products() {
         const res = await axios.get("http://localhost:5000/api/products");
         const allProducts = res.data;
 
-        // Nếu có slug thì lọc theo map
         const filtered = slug
           ? allProducts.filter((p) => slugMap[p.category] === slug)
           : allProducts;
 
         setProducts(filtered);
+        setDisplayed(filtered);
       } catch (err) {
         console.error("🔥 Lỗi khi tải sản phẩm:", err);
       } finally {
@@ -61,6 +61,20 @@ export default function Products() {
     };
     fetchProducts();
   }, [slug]);
+
+  // 🧮 Xử lý sắp xếp
+  const handleSortChange = (e) => {
+    const value = e.target.value;
+    setSort(value);
+
+    let sorted = [...products];
+    if (value === "price-asc") sorted.sort((a, b) => a.price - b.price);
+    else if (value === "price-desc") sorted.sort((a, b) => b.price - a.price);
+    else if (value === "name-asc") sorted.sort((a, b) => a.name.localeCompare(b.name));
+    else if (value === "name-desc") sorted.sort((a, b) => b.name.localeCompare(a.name));
+
+    setDisplayed(sorted);
+  };
 
   return (
     <div className="product-page container py-3">
@@ -78,9 +92,7 @@ export default function Products() {
                 <li key={cat.slug}>
                   <Link
                     to={`/category/${cat.slug}`}
-                    className={`category-link ${
-                      slug === cat.slug ? "active" : ""
-                    }`}
+                    className={`category-link ${slug === cat.slug ? "active" : ""}`}
                   >
                     <span className="me-2">{cat.icon}</span>
                     {cat.name}
@@ -97,13 +109,27 @@ export default function Products() {
             <h5 className="fw-bold text-danger text-uppercase mb-0">
               {currentCategory}
             </h5>
+
+            {/* 🟠 Bộ lọc sắp xếp */}
+            <select
+              name="sort"
+              value={sort}
+              onChange={handleSortChange}
+              className="form-select w-auto"
+            >
+              <option value="">Mặc định</option>
+              <option value="price-asc">Giá tăng dần</option>
+              <option value="price-desc">Giá giảm dần</option>
+              <option value="name-asc">Tên A → Z</option>
+              <option value="name-desc">Tên Z → A</option>
+            </select>
           </div>
 
           {loading ? (
             <p className="text-center text-muted py-5">Đang tải sản phẩm...</p>
-          ) : products.length > 0 ? (
+          ) : displayed.length > 0 ? (
             <div className="category-grid">
-              {products.map((p) => (
+              {displayed.map((p) => (
                 <Link
                   key={p._id || p.id}
                   to={`/product/${p._id || p.id}`}

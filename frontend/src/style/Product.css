@@ -7,6 +7,20 @@
   min-height: auto;
 }
 
+.product-page select.form-select {
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  padding: 6px 10px;
+  background-color: #fff;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.product-page select.form-select:hover {
+  border-color: #dc3545;
+}
+
+
 /* =================== SIDEBAR =================== */
 .category-sidebar {
   border-radius: 10px;
