@@ -9,6 +9,7 @@ import Footer from "./components/Footer";
 import Home from "./pages/Home";
 import TrackOrder from "./pages/TrackOrder"; 
 import Login from "./auth/Login";
+import ForgetPassword from "./auth/ForgetPassword";
 import Register from "./auth/Register";
 import Cart from "./pages/Cart";
 import Checkout from "./pages/Checkout";
@@ -34,6 +35,7 @@ function App() {
                 <Route path="/" element={<Home />} />
                 <Route path="/pages/TrackOrder" element={<TrackOrder />} /> 
                 <Route path="/auth/Login" element={<Login />} /> 
+                <Route path="/auth/forget-password" element={<ForgetPassword />} />
                 <Route path="/auth/Register" element={<Register />} /> 
                 <Route path="/pages/Cart" element={<Cart />} /> 
                 <Route path="/pages/Checkout" element={<Checkout />} /> 

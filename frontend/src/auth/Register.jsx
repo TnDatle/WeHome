@@ -167,7 +167,7 @@ export default function Register() {
                 <div className="text-center mt-3">
                   <small>
                     Đã có tài khoản?{" "}
-                    <a href="/login" className="text-danger fw-semibold">Đăng nhập</a>
+                    <a href="/auth/login" className="text-danger fw-semibold">Đăng nhập</a>
                   </small>
                 </div>
               </Card>

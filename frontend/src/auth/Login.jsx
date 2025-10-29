@@ -127,7 +127,7 @@ export default function Login() {
                 )}
 
                 <div className="text-center mt-3">
-                  <a href="/forgot-password" className="text-danger small d-block mb-1">
+                  <a href="/auth/forget-password" className="text-danger small d-block mb-1">
                     Quên mật khẩu?
                   </a>
                   <span className="small">
