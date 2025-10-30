@@ -1,12 +1,7 @@
 import axios from "axios";
 
-// URL cố định của Address Kit 2025 (sau sáp nhập)
-const BASE_URL = "https://production.cas.so/address-kit/2025-07-01";
+const BASE_URL = "https://dacn-backend.vercel.app/api/vietnam";
 
-/**
- * Lấy danh sách Tỉnh / Thành phố Việt Nam
- * @returns {Promise<Array>} provinces[]
- */
 export async function getProvinces() {
   try {
     const res = await axios.get(`${BASE_URL}/provinces`);
@@ -17,11 +12,6 @@ export async function getProvinces() {
   }
 }
 
-/**
- * Lấy danh sách Phường / Xã theo mã Tỉnh
- * @param {string} provinceCode
- * @returns {Promise<Array>} communes[]
- */
 export async function getCommunes(provinceCode) {
   if (!provinceCode) return [];
   try {
