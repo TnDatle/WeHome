@@ -3,22 +3,18 @@ import cors from "cors";
 import fileUpload from "express-fileupload";
 import productRoutes from "./routes/product.js";
 import orderRoutes from "./routes/order.js";
-import vietnamRouter from "./routes/vietnam.js";
-
 // Firebase
 import { db } from "./config/firebase.js";
 import { collection, getDocs } from "firebase/firestore";
 
 const app = express();
-app.use(cors({ origin: "*" }));
+app.use(cors());
 app.use(express.json());
 app.use(fileUpload()); // enable file upload
-
 
 // Routes
 app.use("/api/products", productRoutes);
 app.use("/api/orders", orderRoutes);
-app.use("/api/vietnam", vietnamRouter);
 app.get("/", (req, res) => res.send("Server OK ✅"));
 
 // Test Firebase connection

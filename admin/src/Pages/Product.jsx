@@ -12,7 +12,7 @@ const Product = () => {
   const [categoryFilter, setCategoryFilter] = useState("Tất cả");
   const [isSaving, setIsSaving] = useState(false);
 
-  const API_BASE = "/api/products";
+  const API_BASE = "http://localhost:5000/api/products";
 
   // Lấy danh sách sản phẩm
   useEffect(() => { fetchProducts(); }, []);
