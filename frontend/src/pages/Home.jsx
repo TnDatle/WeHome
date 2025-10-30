@@ -1,10 +1,14 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Container, Row, Col, Card, Button } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
+import { db } from "../config/Firebase";
+import { collection, getDocs } from "firebase/firestore";
 import "../style/Home.css";
 
 export default function Home() {
+  const [products, setProducts] = useState([]);
+
   // Danh mục chính
   const categories = [
     { id: 1, name: "Thiết bị nhà bếp", icon: "🍳", slug: "kitchen" },
@@ -18,6 +22,30 @@ export default function Home() {
     { id: 9, name: "Gia dụng thông minh", icon: "🏠", slug: "smart-home" },
     { id: 10, name: "Nội thất & trang trí", icon: "🪑", slug: "furniture" },
   ];
+
+  //Lấy sản phẩm từ Firestore và chọn random 4 sản phẩm
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const querySnapshot = await getDocs(collection(db, "Products"));
+        const allProducts = querySnapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+
+        // Trộn ngẫu nhiên và chọn 4 sản phẩm
+        const randomProducts = allProducts
+          .sort(() => 0.5 - Math.random())
+          .slice(0, 4);
+
+        setProducts(randomProducts);
+      } catch (error) {
+        console.error("Lỗi khi lấy sản phẩm:", error);
+      }
+    };
+
+    fetchProducts();
+  }, []);
 
   return (
     <>
@@ -50,14 +78,15 @@ export default function Home() {
               </div>
             </Col>
 
-            {/* ==== CỘT PHẢI: BANNER + GỢI Ý ==== */}
+            {/* ==== CỘT PHẢI ==== */}
             <Col md={9} lg={10}>
               {/* ==== Banner chính ==== */}
               <div className="main-banner mb-4 rounded-4 overflow-hidden shadow-sm">
                 <div className="banner-overlay">
                   <div className="banner-text text-white">
                     <h2 className="fw-bold mb-2">
-                      Nâng tầm không gian sống cùng <span className="wehome-brand">WeHome</span>
+                      Nâng tầm không gian sống cùng{" "}
+                      <span className="wehome-brand">WeHome</span>
                     </h2>
                     <p className="mb-4">
                       Sản phẩm tiện nghi, thông minh, thân thiện với mọi gia đình Việt
@@ -78,30 +107,31 @@ export default function Home() {
               <h5 className="fw-bold text-uppercase text-danger mb-3">
                 Sản phẩm nổi bật
               </h5>
+
               <Row className="g-3">
-                {[1, 2, 3, 4].map((i) => (
-                  <Col key={i} xs={6} md={4} lg={3}>
-                      <Link
-                        to={`/product/${i}`} 
-                        className="text-decoration-none text-dark"
-                      >
-                    <Card className="product-card shadow-sm border-0">
-                      <div className="product-img-wrapper">
-                        <img
-                          src={`/images/demo${i}.jpg`}
-                          alt="product"
-                          className="img-fluid"
-                        />
-                      </div>
-                      <Card.Body className="text-center">
-                        <Card.Title className="product-name">
-                          Sản phẩm demo {i}
-                        </Card.Title>
-                        <p className="product-price text-danger fw-bold mb-0">
-                          {(99000 * i).toLocaleString("vi-VN")}₫
-                        </p>
-                      </Card.Body>
-                    </Card>
+                {products.map((p) => (
+                  <Col key={p.id} xs={6} md={4} lg={3}>
+                    <Link
+                      to={`/product/${p.id}`}
+                      className="text-decoration-none text-dark"
+                    >
+                      <Card className="product-card shadow-sm border-0">
+                        <div className="product-img-wrapper">
+                          <img
+                            src={p.images?.[0] || "/images/noimage.jpg"}
+                            alt={p.name}
+                            className="img-fluid"
+                          />
+                        </div>
+                        <Card.Body className="text-center">
+                          <Card.Title className="product-name">
+                            {p.name}
+                          </Card.Title>
+                          <p className="product-price text-danger fw-bold mb-0">
+                            {p.price?.toLocaleString("vi-VN")}₫
+                          </p>
+                        </Card.Body>
+                      </Card>
                     </Link>
                   </Col>
                 ))}

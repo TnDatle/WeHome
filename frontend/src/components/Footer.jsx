@@ -22,7 +22,7 @@ export default function Footer() {
                 <span className="logo-icon">W</span>E<span>HOME</span>
               </h4>
               <p className="footer-desc">
-                WeHome.com tự hào mang đến những sản phẩm gia dụng thông minh,
+                WeHome.vaa.vn tự hào mang đến những sản phẩm gia dụng thông minh,
                 bền bỉ và tiện lợi — giúp nâng tầm chất lượng cuộc sống hiện đại của
                 mọi gia đình Việt.
               </p>
@@ -42,7 +42,7 @@ export default function Footer() {
                 </li>
                 <li>
                   <FaEnvelope className="me-2 text-danger" />
-                  <strong>Email hỗ trợ:</strong> support@wehome.com
+                  <strong>Email hỗ trợ:</strong> support@wehome.vaa.vn
                 </li>
                 <li>
                   <FaGlobe className="me-2 text-danger" />
@@ -56,7 +56,6 @@ export default function Footer() {
               <h5 className="footer-title">VỀ CHÚNG TÔI</h5>
               <ul className="footer-links list-unstyled">
                 <li><a href="#">Giới thiệu doanh nghiệp</a></li>
-                <li><a href="#">Liên hệ hợp tác</a></li>
                 <li><a href="#">Cơ hội nghề nghiệp</a></li>
               </ul>
 
@@ -65,7 +64,6 @@ export default function Footer() {
                 <li><a href="#">Cách đặt hàng trực tuyến</a></li>
                 <li><a href="#">Phương thức thanh toán</a></li>
                 <li><a href="#">Chính sách giao hàng</a></li>
-                <li><a href="#">Quản lý đơn hàng</a></li>
               </ul>
             </Col>
 
@@ -94,7 +92,7 @@ export default function Footer() {
       <div className="footer-bottom text-center">
         <Container>
           <p className="copyright">
-            © {new Date().getFullYear()} WeHome.com — All rights reserved - Nhóm 8.
+            © {new Date().getFullYear()} WeHome.vaa.vn — All rights reserved - Nhóm 8.
           </p>
         </Container>
       </div>

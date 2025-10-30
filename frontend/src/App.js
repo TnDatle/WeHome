@@ -20,9 +20,10 @@ import Profile from "./pages/Profile";
 import Orders from "./pages/Orders";
 import ThankYou from "./pages/ThankYou";
 
-// ==== POLICY PAGES ====
+// ==== OTHER PAGES ====
 import DeliveryPolicy from "./policy/deliveryPolicy";
 import RefundPolicy from "./policy/refundPolicy";
+import About from "./policy/About"
 function App() {
   return (
      <CartProvider>
