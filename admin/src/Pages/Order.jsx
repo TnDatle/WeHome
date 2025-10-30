@@ -15,7 +15,7 @@ const Order = () => {
   // Lấy danh sách đơn hàng
   const fetchOrders = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/api/orders");
+      const res = await axios.get("/api/orders");
       setOrders(res.data);
     } catch (err) {
       console.error("🔥 Lỗi khi lấy đơn hàng:", err);
@@ -31,7 +31,7 @@ const Order = () => {
   // Cập nhật trạng thái
   const handleStatusChange = async (id, newStatus) => {
     try {
-      await axios.patch(`http://localhost:5000/api/orders/${id}/status`, {
+      await axios.patch(`/api/orders/${id}/status`, {
         status: newStatus,
       });
       await fetchOrders(); // gọi lại danh sách để đảm bảo dữ liệu mới nhất
@@ -47,7 +47,7 @@ const Order = () => {
       const carrier = prompt("Nhập đơn vị vận chuyển (GHN / GHTK / VNPOST):", "GHN");
       if (!carrier) return;
 
-      const res = await axios.patch(`http://localhost:5000/api/orders/${id}/shipping`, {
+      const res = await axios.patch(`/api/orders/${id}/shipping`, {
         carrier,
       });
 
@@ -77,7 +77,7 @@ const Order = () => {
   const handleDelete = async (id) => {
     if (!window.confirm("Bạn có chắc muốn xóa đơn hàng này?")) return;
     try {
-      await axios.delete(`http://localhost:5000/api/orders/${id}`);
+      await axios.delete(`/api/orders/${id}`);
       setOrders((prev) => prev.filter((o) => o.id !== id));
     } catch (err) {
       console.error("🔥 Lỗi khi xóa đơn hàng:", err);
