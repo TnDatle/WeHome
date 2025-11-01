@@ -184,6 +184,8 @@ export default function Checkout() {
       toast.success("Đặt hàng thành công!");
       localStorage.removeItem("checkout_cart");
       localStorage.removeItem("wehome_cart");
+      // Phát sự kiện tùy chỉnh để cập nhật cartCount trong Header
+      window.dispatchEvent(new Event("cartUpdated"));
       navigate("/thankyou", { state: { orderId } });
     } catch (err) {
       console.error("🔥 Lỗi khi gửi đơn hàng:", err);

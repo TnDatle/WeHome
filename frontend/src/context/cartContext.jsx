@@ -17,7 +17,18 @@ export const CartProvider = ({ children }) => {
       setCartCount(updatedCart.reduce((sum, i) => sum + i.quantity, 0));
     };
     window.addEventListener("storage", handleStorage);
-    return () => window.removeEventListener("storage", handleStorage);
+
+    // Lắng nghe sự kiện tùy chỉnh khi giỏ hàng được cập nhật trong cùng tab
+    const handleCartUpdated = () => {
+      const updatedCart = getCart();
+      setCartCount(updatedCart.reduce((sum, i) => sum + i.quantity, 0));
+    };
+    window.addEventListener("cartUpdated", handleCartUpdated);
+
+    return () => {
+      window.removeEventListener("storage", handleStorage);
+      window.removeEventListener("cartUpdated", handleCartUpdated);
+    };
   }, []);
 
   // Hàm cập nhật thủ công (gọi sau khi thêm vào giỏ)
