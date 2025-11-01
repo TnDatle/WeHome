@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams , useNavigate } from "react-router-dom";
 import { Container, Row, Col, Button, Form } from "react-bootstrap";
 import axios from "axios";
 import "../style/ProductDetail.css";
@@ -10,12 +10,14 @@ import toast from "react-hot-toast";
 export default function ProductDetail() {
   const { id } = useParams();
   const [product, setProduct] = useState(null);
-  const [mainImage, setMainImage] = useState(""); // Ảnh chính hiển thị
+  const [mainImage, setMainImage] = useState("");
   const [quantity, setQuantity] = useState(1);
   const { refreshCartCount } = useCart();
 
   // Hàm hiển thị chuỗi có fallback
   const show = (v) => (v && v.trim() !== "" ? v : "Chưa cập nhật");
+  const navigate = useNavigate();
+
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -51,10 +53,26 @@ export default function ProductDetail() {
 
   // Thêm vào giỏ hàng
   const handleAddToCart = () => {
-  addToCart(product, quantity);
-  refreshCartCount(); 
-  toast.success("🛒 Đã thêm vào giỏ hàng!");
-};
+    addToCart(product, quantity);
+    refreshCartCount(); 
+    toast.success("🛒 Đã thêm vào giỏ hàng!");
+    };
+
+    const handleBuyNow = () => {
+    if (!product) return;
+
+    const buyNowItem = [{
+      ...product,
+      quantity: parseInt(quantity),
+    }];
+
+    // Ghi tạm vào localStorage để Checkout đọc được
+    localStorage.setItem("checkout_cart", JSON.stringify(buyNowItem));
+
+    // Chuyển hướng sang trang checkout
+    navigate("/pages/checkout");
+  };
+
 
   if (!product)
     return <p className="text-center text-muted py-5">Đang tải chi tiết...</p>;
@@ -159,7 +177,7 @@ export default function ProductDetail() {
                 <Button variant="danger" className="btn-cart flex-fill" onClick={handleAddToCart}>
                   🛒 Thêm vào giỏ
                 </Button>
-                <Button variant="success" className="btn-buy flex-fill">
+                <Button variant="success" className="btn-buy flex-fill" onClick={handleBuyNow}>
                   ⚡ Mua ngay
                 </Button>
               </div>
