@@ -15,7 +15,7 @@ const User = () => {
   "Quản trị viên": ["quản trị viên", "admin"],
 };
 
-  // ✅ Lấy danh sách người dùng từ Firestore
+  //  Lấy danh sách người dùng từ Firestore
   useEffect(() => {
     const fetchUsers = async () => {
       try {
@@ -27,7 +27,7 @@ const User = () => {
         }));
         setUsers(data);
       } catch (err) {
-        console.error("🔥 Lỗi khi lấy danh sách người dùng:", err);
+        console.error(" Lỗi khi lấy danh sách người dùng:", err);
         setError("Không thể tải danh sách người dùng!");
       } finally {
         setLoading(false);
@@ -37,7 +37,7 @@ const User = () => {
     fetchUsers();
   }, []);
 
-  // ✅ Lọc danh sách
+  //  Lọc danh sách
   const filteredUsers = users.filter((u) => {
     const nameMatch = u.fullname?.toLowerCase().includes(filter.toLowerCase());
     const roleMatch =
@@ -47,7 +47,7 @@ const User = () => {
     return nameMatch && roleMatch;
   });
 
-  // ✅ Xóa người dùng
+  //  Xóa người dùng
   const handleDelete = async (id) => {
     if (window.confirm("Bạn có chắc muốn xóa người dùng này không?")) {
       try {
@@ -55,13 +55,13 @@ const User = () => {
         setUsers((prev) => prev.filter((u) => u.id !== id));
         alert("Đã xóa người dùng!");
       } catch (err) {
-        console.error("🔥 Lỗi khi xóa người dùng:", err);
+        console.error(" Lỗi khi xóa người dùng:", err);
         alert("Không thể xóa người dùng!");
       }
     }
   };
 
-  // ✅ Khóa / Mở khóa người dùng
+  //  Khóa / Mở khóa người dùng
   const toggleStatus = async (user) => {
     const newStatus = user.status === "Hoạt động" ? "Bị khóa" : "Hoạt động";
     try {
@@ -72,7 +72,7 @@ const User = () => {
         )
       );
     } catch (err) {
-      console.error("🔥 Lỗi khi cập nhật trạng thái:", err);
+      console.error(" Lỗi khi cập nhật trạng thái:", err);
       alert("Không thể cập nhật trạng thái!");
     }
   };

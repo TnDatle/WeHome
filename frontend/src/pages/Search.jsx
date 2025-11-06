@@ -12,7 +12,7 @@ export default function Search() {
   const [loading, setLoading] = useState(true);
   const [filtered, setFiltered] = useState([]);
 
-  // 🔹 Lấy tất cả sản phẩm từ Firestore
+  //  Lấy tất cả sản phẩm từ Firestore
   useEffect(() => {
     const fetchProducts = async () => {
       try {
@@ -24,7 +24,7 @@ export default function Search() {
         }));
         setProducts(data);
       } catch (err) {
-        console.error("🔥 Lỗi khi lấy sản phẩm:", err);
+        console.error(" Lỗi khi lấy sản phẩm:", err);
       } finally {
         setLoading(false);
       }

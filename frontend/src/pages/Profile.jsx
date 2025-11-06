@@ -25,12 +25,12 @@ export default function Profile() {
   const [communes, setCommunes] = useState([]);
   const [selectedProvince, setSelectedProvince] = useState("");
 
-  // 🔹 Load danh sách tỉnh
+  //  Load danh sách tỉnh
   useEffect(() => {
     getProvinces().then(setProvinces);
   }, []);
 
-  // 🔹 Load dữ liệu user khi có user
+  //  Load dữ liệu user khi có user
   useEffect(() => {
     if (loading) return;
     if (!user) {
@@ -56,7 +56,7 @@ export default function Profile() {
     }
   }, [user, loading, navigate, provinces]);
 
-  // 🔹 Khi chọn tỉnh
+  //  Khi chọn tỉnh
   const handleProvinceChange = async (e) => {
     const provinceCode = e.target.value;
     setSelectedProvince(provinceCode);
@@ -66,18 +66,18 @@ export default function Profile() {
     setCommunes(data);
   };
 
-  // 🔹 Khi chọn phường
+  //  Khi chọn phường
   const handleCommuneChange = (e) => {
     const communeName = e.target.value;
     setForm({ ...form, commune: communeName });
   };
 
-  // 🔹 Khi thay đổi input khác
+  //  Khi thay đổi input khác
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  // 🔹 Cập nhật hồ sơ
+  //  Cập nhật hồ sơ
   const handleUpdate = async (e) => {
   e.preventDefault();
 

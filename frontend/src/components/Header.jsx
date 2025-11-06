@@ -39,7 +39,7 @@ export default function Header() {
     });
   };
 
-  // 🧩 Xử lý tìm kiếm
+  //  Xử lý tìm kiếm
   const handleSearch = () => {
     const trimmed = keyword.trim();
     if (trimmed !== "") {
@@ -74,7 +74,7 @@ export default function Header() {
                   id="user-dropdown"
                   className="text-white text-decoration-none fw-semibold"
                 >
-                  👤 {user.fullname}
+                  👤{user.fullname}
                 </Dropdown.Toggle>
 
                 <Dropdown.Menu>

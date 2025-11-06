@@ -10,9 +10,9 @@ import {
 } from "firebase/firestore";
 import { uploadImageToFreeImage } from "../utils/uploadImage.js";
 
-// 🟢 THÊM SẢN PHẨM
+// THÊM SẢN PHẨM
 export const addProduct = async (req, res) => {
-  console.log("📥 === Nhận request thêm sản phẩm ===");
+  console.log(" === Nhận request thêm sản phẩm ===");
   console.log("req.body:", req.body);
   console.log("req.files:", req.files);
 
@@ -26,7 +26,7 @@ export const addProduct = async (req, res) => {
 
     const timestamp = new Date().toISOString();
 
-    // 🔹 Upload ảnh song song
+    //  Upload ảnh song song
     let uploadedUrls = [];
     if (imageFiles) {
       const imageArray = Array.isArray(imageFiles) ? imageFiles : [imageFiles];
@@ -39,7 +39,7 @@ export const addProduct = async (req, res) => {
             }
             return null;
           } catch (err) {
-            console.error("🔥 Upload error:", err.message);
+            console.error(" Upload error:", err.message);
             return null;
           }
         })
@@ -47,7 +47,7 @@ export const addProduct = async (req, res) => {
       uploadedUrls = results.filter(Boolean);
     }
 
-    // 🔹 Xóa field undefined
+    // Xóa field undefined
     const clean = (obj) =>
       Object.fromEntries(Object.entries(obj).filter(([_, v]) => v !== undefined));
 
@@ -68,17 +68,17 @@ export const addProduct = async (req, res) => {
     });
 
     const docRef = await addDoc(collection(db, "Products"), newProduct);
-    console.log("✅ Product added:", docRef.id);
+    console.log("Product added:", docRef.id);
 
     res.status(201).json({ ...newProduct, id: docRef.id });
   } catch (err) {
-    console.error("🔥 Error in addProduct:", err.message);
+    console.error(" Error in addProduct:", err.message);
     res.status(500).json({ message: "Server error", error: err.message });
   }
 };
 
 
-// 🟡 CẬP NHẬT SẢN PHẨM
+// CẬP NHẬT SẢN PHẨM
 export const updateProduct = async (req, res) => {
   try {
     const { id } = req.params;
@@ -101,7 +101,7 @@ export const updateProduct = async (req, res) => {
       return res.status(404).json({ message: "Không tìm thấy sản phẩm" });
     }
 
-    // ✅ Upload ảnh mới (nếu có)
+    //  Upload ảnh mới (nếu có)
     const uploadedUrls = [];
     if (imageFiles) {
       const imageArray = Array.isArray(imageFiles) ? imageFiles : [imageFiles];
@@ -112,19 +112,19 @@ export const updateProduct = async (req, res) => {
             uploadedUrls.push(url);
           }
         } catch (err) {
-          console.error("🔥 Upload error:", err.message);
+          console.error(" Upload error:", err.message);
         }
       }
     }
 
-    // ✅ Gộp ảnh cũ + mới
+    // Gộp ảnh cũ + mới
     let mergedImages = uploadedUrls;
     if (existingImages) {
       try {
         const oldImages = JSON.parse(existingImages);
         mergedImages = [...oldImages, ...uploadedUrls];
       } catch (parseErr) {
-        console.warn("⚠️ Parse existingImages lỗi:", parseErr.message);
+        console.warn(" Parse existingImages lỗi:", parseErr.message);
       }
     }
 
@@ -141,27 +141,27 @@ export const updateProduct = async (req, res) => {
     };
 
     await updateDoc(docRef, updatedData);
-    console.log("✅ Product updated:", id);
+    console.log(" Product updated:", id);
     res.status(200).json({ ...updatedData, id });
   } catch (err) {
-    console.error("🔥 Error in updateProduct:", err.message);
+    console.error(" Error in updateProduct:", err.message);
     res.status(500).json({ message: "Lỗi server", error: err.message });
   }
 };
 
-// 🟣 LẤY DANH SÁCH
+//  LẤY DANH SÁCH
 export const getProducts = async (req, res) => {
   try {
     const snapshot = await getDocs(collection(db, "Products"));
     const products = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
     res.status(200).json(products);
   } catch (err) {
-    console.error("🔥 Error in getProducts:", err.message);
+    console.error("Error in getProducts:", err.message);
     res.status(500).json({ message: "Lỗi server", error: err.message });
   }
 };
 
-// 🔴 XÓA
+//  XÓA
 export const deleteProduct = async (req, res) => {
   try {
     const { id } = req.params;
@@ -169,7 +169,7 @@ export const deleteProduct = async (req, res) => {
     console.log("🗑 Deleted product:", id);
     res.status(200).json({ message: "Xóa sản phẩm thành công" });
   } catch (err) {
-    console.error("🔥 Error in deleteProduct:", err.message);
+    console.error(" Error in deleteProduct:", err.message);
     res.status(500).json({ message: "Lỗi server", error: err.message });
   }
 };

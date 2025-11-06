@@ -1,15 +1,15 @@
-// 📦 Đọc giỏ hàng từ localStorage
+//  Đọc giỏ hàng từ localStorage
 export const getCart = () => {
   const cart = localStorage.getItem("cart");
   return cart ? JSON.parse(cart) : [];
 };
 
-// 🛒 Lưu giỏ hàng
+//  Lưu giỏ hàng
 export const saveCart = (cart) => {
   localStorage.setItem("cart", JSON.stringify(cart));
 };
 
-// ➕ Thêm sản phẩm vào giỏ
+//  Thêm sản phẩm vào giỏ
 export const addToCart = (product, quantity = 1) => {
   const cart = getCart();
   const existing = cart.find((item) => item.id === product.id);
@@ -30,14 +30,14 @@ export const addToCart = (product, quantity = 1) => {
   return cart;
 };
 
-// ❌ Xóa sản phẩm
+//  Xóa sản phẩm
 export const removeFromCart = (id) => {
   const cart = getCart().filter((item) => item.id !== id);
   saveCart(cart);
   return cart;
 };
 
-// 🔄 Cập nhật số lượng
+//  Cập nhật số lượng
 export const updateQuantity = (id, quantity) => {
   const cart = getCart();
   const item = cart.find((i) => i.id === id);
@@ -46,7 +46,7 @@ export const updateQuantity = (id, quantity) => {
   return cart;
 };
 
-// 🧹 Xóa toàn bộ giỏ
+//  Xóa toàn bộ giỏ
 export const clearCart = () => {
   localStorage.removeItem("cart");
 };

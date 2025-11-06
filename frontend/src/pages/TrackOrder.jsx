@@ -48,7 +48,7 @@ export default function TrackOrder() {
         setOrders(result);
       }
     } catch (err) {
-      console.error("🔥 Lỗi tra cứu đơn hàng:", err);
+      console.error("Lỗi tra cứu đơn hàng:", err);
       setError("Không thể tra cứu đơn hàng, vui lòng thử lại!");
     } finally {
       setLoading(false);
@@ -64,7 +64,7 @@ export default function TrackOrder() {
     }
   }, [orders]);
 
-  // ✅ Phân loại đơn hàng
+  //  Phân loại đơn hàng
   const currentOrders = orders.filter(
     (o) => o.status === "Chờ xử lý" || o.status === "Đang giao"
   );
@@ -201,17 +201,17 @@ export default function TrackOrder() {
                           <p>
                             <strong>Trạng thái giao:</strong>{" "}
                             {order.shipping.currentStatus === "picked_up"
-                              ? "📦 Đã lấy hàng"
+                              ? "Đã lấy hàng"
                               : order.shipping.currentStatus === "in_transit"
-                              ? "🚚 Đang giao"
+                              ? " Đang giao"
                               : order.shipping.currentStatus === "delivered"
-                              ? "✅ Đã giao thành công"
+                              ? " Đã giao thành công"
                               : "—"}
                           </p>
                         </>
                       )}
 
-                      {/* 🟢 DANH SÁCH SẢN PHẨM */}
+                      {/*  DANH SÁCH SẢN PHẨM */}
                       <h6 className="mt-3 fw-bold">Sản phẩm:</h6>
                       <div className="product-list">
                         {order.items?.map((item, idx) => (
@@ -297,7 +297,7 @@ export default function TrackOrder() {
                         {order.paymentStatus}
                       </p>
 
-                      {/* 🟢 DANH SÁCH SẢN PHẨM TRONG LỊCH SỬ */}
+                      {/*  DANH SÁCH SẢN PHẨM TRONG LỊCH SỬ */}
                       <h6 className="mt-3 fw-bold">Sản phẩm:</h6>
                       <div className="product-list">
                         {order.items?.map((item, idx) => (

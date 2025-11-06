@@ -28,7 +28,7 @@ export default function Orders() {
   const [activeTab, setActiveTab] = useState("current");
   const [fetching, setFetching] = useState(true);
 
-  // ✅ Lấy đơn hàng từ Firestore
+  //  Lấy đơn hàng từ Firestore
   useEffect(() => {
     const fetchOrders = async () => {
       if (!user) return setFetching(false); // chưa đăng nhập
@@ -67,7 +67,7 @@ export default function Orders() {
     (o) => o.status === "Hoàn thành" || o.status === "Đã hủy"
   );
 
-  // 🔹 Badge trạng thái đơn hàng
+  //  Badge trạng thái đơn hàng
   const getBadgeVariant = (status) => {
     switch (status) {
       case "Chờ xử lý":
@@ -83,7 +83,7 @@ export default function Orders() {
     }
   };
 
-  // 🔹 Xem chi tiết đơn hàng
+  //  Xem chi tiết đơn hàng
   const handleViewDetails = (order) => {
     Swal.fire({
       title: `Đơn hàng ${order.orderId}`,
@@ -127,7 +127,7 @@ export default function Orders() {
     });
   };
 
-  // 🔹 Hủy đơn hàng
+  //  Hủy đơn hàng
   const handleCancelOrder = async (order) => {
     Swal.fire({
       title: "Xác nhận hủy đơn?",
@@ -177,7 +177,7 @@ export default function Orders() {
     );
   }
 
-  // 🔹 Bảng danh sách đơn hàng
+  //  Bảng danh sách đơn hàng
   const renderTable = (data) => (
     <Table responsive bordered hover className="align-middle">
       <thead className="table-light">

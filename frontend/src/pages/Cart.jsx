@@ -16,12 +16,12 @@ export default function Cart() {
   const { refreshCartCount } = useCart();
 
 
-  // ✅ Lấy giỏ hàng từ localStorage khi load trang
+  // Lấy giỏ hàng từ localStorage khi load trang
   useEffect(() => {
     setCart(getCart());
   }, []);
 
-  // ✅ Tăng giảm số lượng
+  //  Tăng giảm số lượng
   const handleQuantityChange = (id, delta) => {
     const updated = updateQuantity(
       id,

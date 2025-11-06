@@ -81,11 +81,11 @@ const AddProduct = ({ onSave, onClose, product }) => {
 
     try {
       await onSave?.(formData);
-      toast.success(isEdit ? "✅ Cập nhật sản phẩm thành công" : "🎉 Thêm sản phẩm thành công");
+      toast.success(isEdit ? " Cập nhật sản phẩm thành công" : " Thêm sản phẩm thành công");
       setTimeout(() => onClose?.(), 500);
     } catch (error) {
-      toast.error("❌ Lưu thất bại, vui lòng thử lại");
-      console.error("❌ Lỗi khi lưu sản phẩm:", error);
+      toast.error(" Lưu thất bại, vui lòng thử lại");
+      console.error(" Lỗi khi lưu sản phẩm:", error);
     } finally {
       setIsSubmitting(false);
     }

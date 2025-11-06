@@ -40,7 +40,7 @@ export default function Products() {
   const currentCategory =
     categories.find((c) => c.slug === slug)?.name || "Danh mục sản phẩm";
 
-  // 🟢 Lấy danh sách sản phẩm từ backend
+  //  Lấy danh sách sản phẩm từ backend
   useEffect(() => {
     const fetchProducts = async () => {
       try {
@@ -54,7 +54,7 @@ export default function Products() {
         setProducts(filtered);
         setDisplayed(filtered);
       } catch (err) {
-        console.error("🔥 Lỗi khi tải sản phẩm:", err);
+        console.error(" Lỗi khi tải sản phẩm:", err);
       } finally {
         setLoading(false);
       }
@@ -62,7 +62,7 @@ export default function Products() {
     fetchProducts();
   }, [slug]);
 
-  // 🧮 Xử lý sắp xếp
+  //  Xử lý sắp xếp
   const handleSortChange = (e) => {
     const value = e.target.value;
     setSort(value);
@@ -110,7 +110,7 @@ export default function Products() {
               {currentCategory}
             </h5>
 
-            {/* 🟠 Bộ lọc sắp xếp */}
+            {/*  Bộ lọc sắp xếp */}
             <select
               name="sort"
               value={sort}

@@ -30,7 +30,7 @@ export default function Checkout() {
   const navigate = useNavigate();
   const { user } = useUser();
 
-  // 🟢 Load giỏ hàng và danh sách tỉnh
+  //  Load giỏ hàng và danh sách tỉnh
   useEffect(() => {
     const savedCart = JSON.parse(localStorage.getItem("checkout_cart")) || [];
     if (savedCart.length === 0) {
@@ -50,7 +50,7 @@ export default function Checkout() {
     fetchProvinces();
   }, [navigate]);
 
-  // 🟢 Load thông tin user (nếu có)
+  //  Load thông tin user (nếu có)
   useEffect(() => {
     const loadUserProfile = async () => {
       if (!user || provinces.length === 0) return;
@@ -98,7 +98,7 @@ export default function Checkout() {
     loadUserProfile();
   }, [user, provinces]);
 
-  // 🟢 Xử lý thay đổi
+  //  Xử lý thay đổi
   const handleProvinceChange = async (e) => {
     const code = e.target.value;
     const selected = provinces.find((p) => p.code === code);
@@ -134,12 +134,12 @@ export default function Checkout() {
     setForm({ ...form, payment: e.target.value });
   };
 
-  // 🧾 Mã đơn hàng tự động
+  //  Mã đơn hàng tự động
   const [orderId] = useState(() => {
     return "DH" + Date.now().toString().slice(-8);
   });
 
-  // 🏦 Thông tin ngân hàng
+  //  Thông tin ngân hàng
   const bankInfo = {
     bank: "Vietcombank",
     accountNumber: "000000000",
@@ -151,7 +151,7 @@ export default function Checkout() {
     bankInfo.accountName
   )}`;
 
-  // 🟢 Submit đơn hàng
+  //  Submit đơn hàng
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -188,7 +188,7 @@ export default function Checkout() {
       window.dispatchEvent(new Event("cartUpdated"));
       navigate("/thankyou", { state: { orderId } });
     } catch (err) {
-      console.error("🔥 Lỗi khi gửi đơn hàng:", err);
+      console.error(" Lỗi khi gửi đơn hàng:", err);
       toast.error("Không thể đặt hàng, vui lòng thử lại!");
     }
   };

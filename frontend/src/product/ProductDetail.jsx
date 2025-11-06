@@ -31,7 +31,7 @@ export default function ProductDetail() {
           setProduct({});
         }
       } catch (err) {
-        console.error("🔥 Lỗi khi tải chi tiết sản phẩm:", err);
+        console.error(" Lỗi khi tải chi tiết sản phẩm:", err);
       }
     };
     fetchProduct();

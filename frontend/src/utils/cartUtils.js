@@ -2,7 +2,7 @@
 
 const CART_KEY = "wehome_cart";
 
-/** 🔹 Lấy giỏ hàng */
+/** Lấy giỏ hàng */
 export const getCart = () => {
   try {
     return JSON.parse(localStorage.getItem(CART_KEY)) || [];
@@ -11,12 +11,12 @@ export const getCart = () => {
   }
 };
 
-/** 🔹 Lưu giỏ hàng */
+/**  Lưu giỏ hàng */
 export const saveCart = (cart) => {
   localStorage.setItem(CART_KEY, JSON.stringify(cart));
 };
 
-/** 🔹 Thêm sản phẩm */
+/**  Thêm sản phẩm */
 export const addToCart = (product, quantity = 1) => {
   const cart = getCart();
   const existing = cart.find((i) => i.id === product.id);
@@ -37,7 +37,7 @@ export const addToCart = (product, quantity = 1) => {
   return cart;
 };
 
-/** 🔹 Cập nhật số lượng */
+/**  Cập nhật số lượng */
 export const updateQuantity = (id, quantity) => {
   const cart = getCart().map((item) =>
     item.id === id ? { ...item, quantity: Math.max(1, quantity) } : item
@@ -46,14 +46,14 @@ export const updateQuantity = (id, quantity) => {
   return cart;
 };
 
-/** 🔹 Xóa sản phẩm */
+/**  Xóa sản phẩm */
 export const removeFromCart = (id) => {
   const cart = getCart().filter((item) => item.id !== id);
   saveCart(cart);
   return cart;
 };
 
-/** 🔹 Xóa toàn bộ */
+/**  Xóa toàn bộ */
 export const clearCart = () => {
   localStorage.removeItem(CART_KEY);
 };

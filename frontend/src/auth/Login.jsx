@@ -44,7 +44,7 @@ export default function Login() {
       const userData = userSnap.data();
 
       if (userData.role === "Customer") {
-        // ✅ SweetAlert thông báo thành công
+        //  SweetAlert thông báo thành công
         Swal.fire({
           icon: "success",
           title: "Đăng nhập thành công!",

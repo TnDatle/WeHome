@@ -20,7 +20,7 @@ const Product = () => {
   const fetchProducts = async () => {
   try {
     const res = await axios.get(API_BASE);
-    console.log("✅ Response data:", res.data);
+    console.log(" Response data:", res.data);
     setProducts(
       Array.isArray(res.data)
         ? res.data.map((p) => ({
@@ -34,7 +34,7 @@ const Product = () => {
         : []
     );
   } catch (err) {
-    console.error("❌ AxiosError:", err.message);
+    console.error(" AxiosError:", err.message);
     if (err.response) {
       console.error("➡️ Status:", err.response.status);
       console.error("➡️ Data:", err.response.data);
@@ -50,10 +50,10 @@ const Product = () => {
     if (isSaving) return;
     setIsSaving(true);
 
-    // 🔹 Hiển thị tiến trình lưu
+    //  Hiển thị tiến trình lưu
     toast.loading("Đang lưu sản phẩm...", { id: "saving" });
 
-    // 🔹 Tạo sản phẩm tạm để hiển thị Optimistic UI
+    //  Tạo sản phẩm tạm để hiển thị Optimistic UI
     const tempId = "temp-" + Date.now();
     const tempProduct = {
       ...formObj,
@@ -87,7 +87,7 @@ const Product = () => {
         res = await axios.put(`${API_BASE}/${formObj.id}`, fd, {
           headers: { "Content-Type": "multipart/form-data" },
         });
-        toast.success("✅ Cập nhật sản phẩm thành công", { id: "saving" });
+        toast.success(" Cập nhật sản phẩm thành công", { id: "saving" });
         setProducts((prev) =>
           prev.map((p) => (p.id === formObj.id ? res.data : p))
         );
@@ -96,7 +96,7 @@ const Product = () => {
           headers: { "Content-Type": "multipart/form-data" },
         });
 
-        toast.success("🎉 Thêm sản phẩm thành công", { id: "saving" });
+        toast.success(" Thêm sản phẩm thành công", { id: "saving" });
         setProducts((prev) =>
           prev.map((p) => (p.id === tempId ? res.data : p))
         );
@@ -105,7 +105,7 @@ const Product = () => {
       setShowAddModal(false);
       setEditingProduct(null);
     } catch (err) {
-      console.error("❌ Lỗi lưu:", err);
+      console.error(" Lỗi lưu:", err);
       toast.error("Không thể lưu sản phẩm", { id: "saving" });
       // Xóa sản phẩm tạm nếu lỗi
       setProducts((prev) => prev.filter((p) => p.id !== tempId));
@@ -143,7 +143,7 @@ const Product = () => {
       </div>
 
       <div className="product-filter">
-        <input placeholder="🔍 Tìm sản phẩm..." value={filter} onChange={(e) => setFilter(e.target.value)} />
+        <input placeholder=" Tìm sản phẩm..." value={filter} onChange={(e) => setFilter(e.target.value)} />
         <select value={categoryFilter} onChange={(e) => setCategoryFilter(e.target.value)}>
           <option>Tất cả</option>
           {["Thiết bị nhà bếp","Máy lọc không khí","Đèn & chiếu sáng","Dụng cụ vệ sinh","Đồ dùng phòng tắm","Đồ điện gia dụng nhỏ","Chăm sóc cá nhân","Thiết bị giặt sấy","Gia dụng thông minh","Nội thất & trang trí"].map(cat => (

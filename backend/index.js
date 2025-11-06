@@ -15,21 +15,21 @@ app.use(fileUpload()); // enable file upload
 // Routes
 app.use("/api/products", productRoutes);
 app.use("/api/orders", orderRoutes);
-app.get("/", (req, res) => res.send("Server OK ✅"));
+app.get("/", (req, res) => res.send("Server OK "));
 
 // Test Firebase connection
 const testFirebase = async () => {
   try {
     const querySnapshot = await getDocs(collection(db, "Products"));
-    console.log(`✅ Firebase connected. Products count: ${querySnapshot.size}`);
+    console.log(` Firebase connected. Products count: ${querySnapshot.size}`);
   } catch (err) {
-    console.error("🔥 Firebase connection error:", err.message);
+    console.error(" Firebase connection error:", err.message);
   }
 };
 
 // Run server
 const PORT = 5000;
 app.listen(PORT, async () => {
-  console.log(`🔥 Backend running on port ${PORT}`);
+  console.log(` Backend running on port ${PORT}`);
   await testFirebase(); // test Firebase ngay khi server start
 });

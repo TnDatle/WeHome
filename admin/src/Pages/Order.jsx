@@ -18,7 +18,7 @@ const Order = () => {
       const res = await axios.get("http://localhost:5000/api/orders");
       setOrders(res.data);
     } catch (err) {
-      console.error("🔥 Lỗi khi lấy đơn hàng:", err);
+      console.error("Lỗi khi lấy đơn hàng:", err);
     } finally {
       setLoading(false);
     }
@@ -36,7 +36,7 @@ const Order = () => {
       });
       await fetchOrders(); // gọi lại danh sách để đảm bảo dữ liệu mới nhất
     } catch (err) {
-      console.error("🔥 Lỗi cập nhật trạng thái:", err);
+      console.error(" Lỗi cập nhật trạng thái:", err);
     }
   };
 
@@ -68,7 +68,7 @@ const Order = () => {
       );
       alert(`Đã tạo vận chuyển thành công! Mã vận đơn: ${res.data.trackingCode}`);
     } catch (err) {
-      console.error("🔥 Lỗi tạo vận chuyển:", err.response?.data || err.message);
+      console.error(" Lỗi tạo vận chuyển:", err.response?.data || err.message);
       alert("Không thể tạo đơn vận chuyển, vui lòng thử lại!");
     }
   };
@@ -80,7 +80,7 @@ const Order = () => {
       await axios.delete(`http://localhost:5000/api/orders/${id}`);
       setOrders((prev) => prev.filter((o) => o.id !== id));
     } catch (err) {
-      console.error("🔥 Lỗi khi xóa đơn hàng:", err);
+      console.error(" Lỗi khi xóa đơn hàng:", err);
     }
   };
 
@@ -95,7 +95,7 @@ const Order = () => {
       <div className="order-header">
         <h4>Quản lý đơn hàng</h4>
         <button className="btn-refresh" onClick={fetchOrders}>
-          🔄 Làm mới
+             Làm mới
         </button>
       </div>
 
@@ -103,7 +103,7 @@ const Order = () => {
       <div className="order-filter">
         <input
           type="text"
-          placeholder="🔍 Tìm theo tên khách..."
+          placeholder=" Tìm theo tên khách..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />

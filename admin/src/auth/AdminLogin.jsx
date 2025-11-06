@@ -19,7 +19,7 @@ export default function AdminLogin() {
     e.preventDefault();
 
     try {
-      // ✅ Đăng nhập bằng Firebase Auth
+      //  Đăng nhập bằng Firebase Auth
       const res = await signInWithEmailAndPassword(
         auth,
         form.email,
@@ -29,14 +29,14 @@ export default function AdminLogin() {
       const docRef = doc(db, "Users", res.user.uid);
       const docSnap = await getDoc(docRef);
 
-      // ✅ Kiểm tra quyền admin
+      //  Kiểm tra quyền admin
       if (docSnap.exists() && docSnap.data().role === "Admin") {
         const adminData = { uid: res.user.uid, ...docSnap.data() };
 
-        // 🔥 Cập nhật trạng thái online trong Firestore
+        //  Cập nhật trạng thái online trong Firestore
         await updateDoc(docRef, { isOnline: true });
 
-        // ✅ Lưu vào localStorage qua context
+        //  Lưu vào localStorage qua context
         login(adminData);
 
         toast.success("Đăng nhập thành công!");
@@ -45,7 +45,7 @@ export default function AdminLogin() {
         toast.error("Tài khoản này không có quyền quản trị!");
       }
     } catch (err) {
-      console.error("❌ Login error:", err);
+      console.error(" Login error:", err);
       toast.error("Sai email hoặc mật khẩu!");
     }
   };

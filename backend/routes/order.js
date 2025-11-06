@@ -12,7 +12,7 @@ import {
 
 const router = express.Router();
 
-// 🟢 TẠO ĐƠN HÀNG (checkout)
+///TẠO ĐƠN HÀNG (checkout)
 router.post("/", async (req, res) => {
   try {
     const {
@@ -67,12 +67,12 @@ router.post("/", async (req, res) => {
       ...newOrder,
     });
   } catch (err) {
-    console.error("🔥 Lỗi khi lưu đơn hàng:", err);
+    console.error(" Lỗi khi lưu đơn hàng:", err);
     res.status(500).json({ message: "Server error", error: err.message });
   }
 });
 
-// 🟠 LẤY TẤT CẢ ĐƠN HÀNG (cho admin)
+// LẤY TẤT CẢ ĐƠN HÀNG (cho admin)
 router.get("/", async (req, res) => {
   try {
     const snapshot = await getDocs(collection(db, "Orders"));
@@ -83,12 +83,12 @@ router.get("/", async (req, res) => {
 
     res.status(200).json(orders);
   } catch (err) {
-    console.error("🔥 Lỗi khi lấy danh sách đơn hàng:", err);
+    console.error(" Lỗi khi lấy danh sách đơn hàng:", err);
     res.status(500).json({ message: "Server error", error: err.message });
   }
 });
 
-// ✅ CẬP NHẬT TRẠNG THÁI ĐƠN HÀNG
+// CẬP NHẬT TRẠNG THÁI ĐƠN HÀNG
 router.patch("/:id/status", async (req, res) => {
   try {
     const { id } = req.params;
@@ -108,7 +108,7 @@ router.patch("/:id/status", async (req, res) => {
     const data = snap.data();
     const updateData = { status };
 
-    // ✅ Nếu trạng thái là "Hoàn thành" → cập nhật luôn thanh toán
+    // Nếu trạng thái là "Hoàn thành" → cập nhật luôn thanh toán
     if (status === "Hoàn thành") {
       updateData.paymentStatus = "Đã thanh toán"; // 💰 Thanh toán hoàn tất
       updateData.shipping = {
@@ -118,7 +118,7 @@ router.patch("/:id/status", async (req, res) => {
       };
     }
 
-    // ✅ Nếu trạng thái là "Đang giao" → cập nhật shipping đang vận chuyển
+    // Nếu trạng thái là "Đang giao" → cập nhật shipping đang vận chuyển
     if (status === "Đang giao") {
       updateData.shipping = {
         ...(data.shipping || {}),
@@ -126,7 +126,7 @@ router.patch("/:id/status", async (req, res) => {
       };
     }
 
-    // ✅ Nếu trạng thái là "Đã hủy" → reset thanh toán
+    // Nếu trạng thái là "Đã hủy" → reset thanh toán
     if (status === "Đã hủy") {
       updateData.paymentStatus = "Chưa thanh toán";
     }
@@ -134,28 +134,28 @@ router.patch("/:id/status", async (req, res) => {
     await updateDoc(ref, updateData);
 
     res.json({
-      message: "✅ Cập nhật trạng thái thành công!",
+      message: "Cập nhật trạng thái thành công!",
       updateData,
     });
   } catch (err) {
-    console.error("🔥 Lỗi khi cập nhật trạng thái:", err);
+    console.error("Lỗi khi cập nhật trạng thái:", err);
     res.status(500).json({ message: "Server error", error: err.message });
   }
 });
 
-// 🔴 XÓA ĐƠN HÀNG
+// XÓA ĐƠN HÀNG
 router.delete("/:id", async (req, res) => {
   try {
     const { id } = req.params;
     await deleteDoc(doc(db, "Orders", id));
     res.json({ message: "Đã xóa đơn hàng thành công." });
   } catch (err) {
-    console.error("🔥 Lỗi khi xóa đơn hàng:", err);
+    console.error("Lỗi khi xóa đơn hàng:", err);
     res.status(500).json({ message: "Server error", error: err.message });
   }
 });
 
-// 🟢 TẠO ĐƠN VỊ VẬN CHUYỂN CHO ĐƠN HÀNG
+// TẠO ĐƠN VỊ VẬN CHUYỂN CHO ĐƠN HÀNG
 router.patch("/:id/shipping", async (req, res) => {
   try {
     const { id } = req.params;
@@ -188,7 +188,7 @@ router.patch("/:id/shipping", async (req, res) => {
     });
 
     res.json({
-      message: "✅ Đã tạo đơn vận chuyển thành công!",
+      message: " Đã tạo đơn vận chuyển thành công!",
       trackingCode,
       status: "Đang giao",
     });

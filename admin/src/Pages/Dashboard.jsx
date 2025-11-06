@@ -147,7 +147,7 @@ const Dashboard = () => {
 
   return (
     <div className="dashboard-container">
-      <h4 className="section-title">📊 Tổng quan hệ thống</h4>
+      <h4 className="section-title"> Tổng quan hệ thống</h4>
 
       {loading ? (
         <p className="no-data">Đang tải dữ liệu...</p>
