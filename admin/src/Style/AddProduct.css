@@ -1,10 +1,7 @@
 /* ======= OVERLAY (NỀN MỜ) ======= */
 .add-product-container {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
+  inset: 0;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -18,7 +15,7 @@
   display: flex;
   flex-direction: column;
   width: 100%;
-  max-width: 950px;
+  max-width: 960px;
   background: #fff;
   border-radius: 16px;
   padding: 28px 36px;
@@ -38,32 +35,26 @@
   padding-bottom: 10px;
 }
 
-/* ======= FORM BODY (CHIA 2 CỘT) ======= */
+/* ======= BODY 2 CỘT ======= */
 .add-product-form form {
-  display: flex;
-  flex-direction: row;
-  gap: 30px;
+  display: grid;
+  grid-template-columns: 1.05fr 0.95fr;
+  gap: 40px;
 }
 
-/* ======= BÊN TRÁI ======= */
-.form-left {
-  flex: 1.1;
-  display: flex;
-  flex-direction: column;
-}
-
-/* ======= BÊN PHẢI ======= */
+/* ======= CỘT TRÁI ======= */
+.form-left,
 .form-right {
-  flex: 1;
   display: flex;
   flex-direction: column;
 }
 
-/* ======= INPUT / LABEL ======= */
+/* ======= LABEL + INPUT ======= */
 .add-product-form label {
   font-weight: 600;
-  margin-top: 10px;
+  margin-top: 12px;
   color: #333;
+  font-size: 14.5px;
 }
 
 .add-product-form input,
@@ -71,13 +62,14 @@
 .add-product-form select {
   width: 100%;
   margin-top: 6px;
-  padding: 10px 12px;
+  padding: 9px 12px;
   border-radius: 8px;
   border: 1px solid #ccc;
   font-size: 15px;
   font-family: inherit;
   transition: all 0.2s ease;
   box-sizing: border-box;
+  background-color: #fff;
 }
 
 .add-product-form input:focus,
@@ -90,7 +82,7 @@
 
 .add-product-form textarea {
   resize: vertical;
-  min-height: 100px;
+  min-height: 110px;
 }
 
 /* ======= INPUT READONLY ======= */
@@ -102,25 +94,89 @@
   font-family: monospace;
 }
 
+/* ======= TOGGLE SWITCH ======= */
+.toggle-available {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 14px 0;
+  font-weight: 600;
+}
+
+.toggle-label-main {
+  font-weight: 600;
+  color: #333;
+  display: block;
+  margin-top: 10px;
+}
+
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 46px;
+  height: 26px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  inset: 0;
+  background-color: #ccc;
+  border-radius: 34px;
+  transition: 0.3s;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 18px;
+  width: 18px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  border-radius: 50%;
+  transition: 0.3s;
+}
+
+.switch input:checked + .slider {
+  background-color: #28a745;
+}
+
+.switch input:checked + .slider:before {
+  transform: translateX(20px);
+}
+
+.toggle-label-text {
+  font-size: 15px;
+  min-width: 90px;
+}
+
+
 /* ======= HÌNH ẢNH ======= */
 .preview-images {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+  gap: 10px;
   margin-top: 10px;
 }
 
 .preview-images img {
-  width: 80px;
-  height: 80px;
+  width: 100%;
+  aspect-ratio: 1 / 1;
   object-fit: cover;
-  border-radius: 8px;
+  border-radius: 10px;
   border: 1px solid #ddd;
-  transition: transform 0.2s, border-color 0.2s;
+  transition: transform 0.25s, border-color 0.25s;
 }
 
 .preview-images img:hover {
-  transform: scale(1.08);
+  transform: scale(1.05);
   border-color: #dc3545;
 }
 
@@ -129,7 +185,7 @@
   display: flex;
   justify-content: space-between;
   gap: 12px;
-  margin-top: 20px;
+  margin-top: 24px;
 }
 
 .form-actions button {
@@ -157,7 +213,7 @@
 
 /* Nút hủy */
 .form-actions button[type="button"] {
-  background-color: #f0f0f0;
+  background-color: #f3f3f3;
   color: #333;
 }
 
@@ -187,13 +243,18 @@
 }
 
 /* ======= RESPONSIVE ======= */
-@media (max-width: 850px) {
+@media (max-width: 900px) {
   .add-product-form form {
-    flex-direction: column;
+    grid-template-columns: 1fr;
+    gap: 20px;
   }
 
   .add-product-form {
-    width: 90%;
-    padding: 20px;
+    width: 92%;
+    padding: 22px;
+  }
+
+  .preview-images {
+    grid-template-columns: repeat(auto-fit, minmax(70px, 1fr));
   }
 }

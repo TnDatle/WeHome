@@ -17,7 +17,7 @@ export const addProduct = async (req, res) => {
   console.log("req.files:", req.files);
 
   try {
-    const { name, description, price, category, color, material, size } = req.body;
+    const { name, description, price, category, color, material, size, available } = req.body;
     const imageFiles = req.files?.images;
 
     if (!name || !description || !price || !category) {
@@ -59,6 +59,7 @@ export const addProduct = async (req, res) => {
       color: color || "",
       material: material || "",
       size: size || "",
+      available: available === "false" || available === false ? false : true,
       images:
         uploadedUrls.length > 0
           ? uploadedUrls
@@ -91,6 +92,7 @@ export const updateProduct = async (req, res) => {
       color,
       material,
       size,
+      available,
     } = req.body;
     const imageFiles = req.files?.images;
 
@@ -136,6 +138,7 @@ export const updateProduct = async (req, res) => {
       color: color || "",
       material: material || "",
       size: size || "",
+      available: available === "false" || available === false ? false : true,
       images: mergedImages,
       updatedAt: new Date().toISOString(),
     };

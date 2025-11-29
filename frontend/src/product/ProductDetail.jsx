@@ -142,7 +142,11 @@ export default function ProductDetail() {
                 </li>
                 <li>
                   <strong>Tình trạng:</strong>{" "}
-                  {show(product.status || "Còn hàng")}
+                  {product.available === false ? (
+                    <span className="text-danger fw-semibold">Hết hàng</span>
+                  ) : (
+                    <span className="text-success fw-semibold">Còn hàng</span>
+                  )}
                 </li>
                 <li>
                   <strong>Danh mục:</strong> {show(product.category)}
@@ -174,13 +178,27 @@ export default function ProductDetail() {
               </div>
 
               <div className="mt-4 d-flex gap-3">
-                <Button variant="danger" className="btn-cart flex-fill" onClick={handleAddToCart}>
+                <Button
+                  variant="danger"
+                  className="btn-cart flex-fill"
+                  onClick={handleAddToCart}
+                  disabled={product.available === false}
+                >
                   🛒 Thêm vào giỏ
                 </Button>
-                <Button variant="success" className="btn-buy flex-fill" onClick={handleBuyNow}>
+                <Button
+                  variant="success"
+                  className="btn-buy flex-fill"
+                  onClick={handleBuyNow}
+                  disabled={product.available === false}
+                >
                   ⚡ Mua ngay
                 </Button>
               </div>
+
+              {product.available === false && (
+                <p className="text-danger mt-2">⚠️ Sản phẩm hiện đã hết hàng, vui lòng quay lại sau.</p>
+              )}
 
               <div className="delivery-info mt-4">
                 <p>🚚 Giao hàng tận nơi – Kiểm tra hàng trước khi thanh toán</p>

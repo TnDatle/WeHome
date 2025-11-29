@@ -139,13 +139,15 @@ const User = () => {
                 <td>{u.phone}</td>
                 <td>{u.role}</td>
                 <td>
-                  <span
-                    className={`status ${
-                      u.status === "Hoạt động" ? "active" : "blocked"
-                    }`}
-                  >
-                    {u.status}
-                  </span>
+                   <span
+                      className={`status ${
+                        (u.status || "Hoạt động") === "Hoạt động" ? "active" : "blocked"
+                      }`}
+                    >
+                      {u.status === "Bị khóa"
+                        ? "Bị khóa"
+                        : "Hoạt động"}
+                    </span>
                 </td>
                 <td>
                   {u.createdAt

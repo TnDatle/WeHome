@@ -91,7 +91,7 @@ export default function Checkout() {
           }));
         }
       } catch (err) {
-        console.error("🔥 Lỗi khi load thông tin người dùng:", err);
+        console.error("Lỗi khi load thông tin người dùng:", err);
       }
     };
 
