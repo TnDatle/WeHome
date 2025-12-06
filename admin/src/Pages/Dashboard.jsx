@@ -1,11 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "../Style/Dashboard.css";
 import { db } from "../Config/firebase-config";
-import {
-  collection,
-  getDocs,
-  onSnapshot,
-} from "firebase/firestore";
+import { collection, getDocs, onSnapshot } from "firebase/firestore";
 
 const Dashboard = () => {
   const [stats, setStats] = useState({
@@ -30,8 +26,30 @@ const Dashboard = () => {
       setAdminsOnline(onlineAdmins);
     });
 
-    return () => unsub(); // cleanup listener
+    return () => unsub();
   }, []);
+
+  // ================== HỖ TRỢ CHUYỂN createdAt VỀ DATE ==================
+  const toJsDate = (value) => {
+    if (!value) return null;
+
+    try {
+      if (value.toDate) {
+        // Firestore Timestamp
+        return value.toDate();
+      }
+      if (value.seconds) {
+        // Kiểu { seconds, nanoseconds }
+        return new Date(value.seconds * 1000);
+      }
+      // String / number / ISO
+      const d = new Date(value);
+      if (isNaN(d.getTime())) return null;
+      return d;
+    } catch (e) {
+      return null;
+    }
+  };
 
   // ================== LẤY DỮ LIỆU TỔNG QUAN ==================
   useEffect(() => {
@@ -47,10 +65,9 @@ const Dashboard = () => {
         const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
         const newUsers = allUsers.filter((u) => {
           if (!u.createdAt) return false;
-          const date =
-            u.createdAt.toDate?.() ||
-            new Date(u.createdAt.seconds * 1000);
-          return date >= sevenDaysAgo;
+          const date = toJsDate(u.createdAt);
+          if (!date) return false;
+          return date.getTime() >= sevenDaysAgo.getTime();
         }).length;
 
         // ===== PRODUCTS =====
@@ -81,38 +98,50 @@ const Dashboard = () => {
           (o) => o.status === "Đang giao"
         ).length;
 
-        // ===== DOANH THU =====
+        // ===== DOANH THU DỰA TRÊN deliveredAt (KHÔNG PHỤ THUỘC TIMEZONE MÁY) =====
         let revenueToday = 0;
         let revenueMonth = 0;
 
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-        const currentMonth = today.getMonth();
-        const currentYear = today.getFullYear();
+        const now = new Date();
+
+        // Mốc ngày / tháng theo UTC (dùng ISO key cho chắc chắn)
+        const todayKey = now.toISOString().slice(0, 10); // 'YYYY-MM-DD'
+        const monthKey = todayKey.slice(0, 7);           // 'YYYY-MM'
 
         allOrders.forEach((o) => {
-          if (!o.status?.toLowerCase().includes("hoàn")) return;
-          if (!o.createdAt || !o.total) return;
+          // Chỉ lấy đơn "Hoàn thành"
+          const status = o.status ? o.status.toString().trim().toLowerCase() : "";
+          if (status !== "hoàn thành") return;
 
-          let orderDate = o.createdAt.toDate
-            ? o.createdAt.toDate()
-            : new Date(o.createdAt.seconds * 1000);
+          // ✅ CHỈ CỘNG DOANH THU NẾU CÓ deliveredAt
+          const rawDate = o.shipping?.deliveredAt || null;
+          if (!rawDate) return; // không có deliveredAt thì bỏ qua đơn này
 
-          const total = Number(o.total) || 0;
+          const orderDate = toJsDate(rawDate);
+          if (!orderDate) return;
 
-          // ✅ doanh thu hôm nay
-          const sameDay =
-            orderDate.getDate() === today.getDate() &&
-            orderDate.getMonth() === today.getMonth() &&
-            orderDate.getFullYear() === today.getFullYear();
+          const iso = orderDate.toISOString();
+          const orderDayKey = iso.slice(0, 10);  // 'YYYY-MM-DD'
+          const orderMonthKey = iso.slice(0, 7); // 'YYYY-MM'
 
-          if (sameDay) revenueToday += total;
+          // Convert total
+          if (o.total === undefined || o.total === null) return;
 
-          // ✅ doanh thu tháng này
-          if (
-            orderDate.getMonth() === currentMonth &&
-            orderDate.getFullYear() === currentYear
-          ) {
+          let total = 0;
+          if (typeof o.total === "number") {
+            total = o.total;
+          } else {
+            const onlyDigits = o.total.toString().replace(/[^\d]/g, "");
+            total = parseInt(onlyDigits || "0", 10);
+          }
+
+          // Doanh thu HÔM NAY (nếu ngày giao == hôm nay theo UTC)
+          if (orderDayKey === todayKey) {
+            revenueToday += total;
+          }
+
+          // Doanh thu THÁNG NÀY (nếu tháng giao == tháng hiện tại theo UTC)
+          if (orderMonthKey === monthKey) {
             revenueMonth += total;
           }
         });
@@ -137,6 +166,11 @@ const Dashboard = () => {
     fetchStats();
   }, []);
 
+  // ================== LABEL NGÀY / THÁNG ĐỂ HIỂN THỊ TRÊN UI ==================
+  const nowClient = new Date();
+  const todayLabel = nowClient.toLocaleDateString("vi-VN"); // vd: 02/12/2025
+  const monthLabel = `${nowClient.getMonth() + 1}/${nowClient.getFullYear()}`; // vd: 12/2025
+
   // ================== DANH SÁCH THẺ ==================
   const items = [
     { title: "Khách hàng", value: stats.customers, color: "red" },
@@ -145,7 +179,7 @@ const Dashboard = () => {
     { title: "Người dùng mới (7 ngày)", value: stats.newUsers, color: "green" },
     { title: "Sản phẩm tồn kho", value: stats.products, color: "purple" },
     {
-      title: "Doanh thu hôm nay",
+      title: `Doanh thu ngày ${todayLabel}`,
       value: stats.revenueToday.toLocaleString("vi-VN", {
         style: "currency",
         currency: "VND",
@@ -153,7 +187,7 @@ const Dashboard = () => {
       color: "gray",
     },
     {
-      title: "Doanh thu tháng này",
+      title: `Doanh thu tháng ${monthLabel}`,
       value: stats.revenueMonth.toLocaleString("vi-VN", {
         style: "currency",
         currency: "VND",
@@ -217,7 +251,15 @@ const Dashboard = () => {
                   <li key={i}>
                     <span
                       className="dot"
-                      style={{ backgroundColor: ["#dc3545", "#fd7e14", "#0d6efd", "#198754", "#6f42c1"][i % 5] }}
+                      style={{
+                        backgroundColor: [
+                          "#dc3545",
+                          "#fd7e14",
+                          "#0d6efd",
+                          "#198754",
+                          "#6f42c1",
+                        ][i % 5],
+                      }}
                     ></span>
                     {c.cat}: {c.count} ({c.percent.toFixed(1)}%)
                   </li>

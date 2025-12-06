@@ -19,15 +19,16 @@ import Search from "./pages/Search";
 import Profile from "./pages/Profile";
 import Orders from "./pages/Orders";
 import ThankYou from "./pages/ThankYou";
+import Chatbot from "./components/Chatbot";
 
 // ==== OTHER PAGES ====
 import DeliveryPolicy from "./policy/deliveryPolicy";
 import RefundPolicy from "./policy/refundPolicy";
-import About from "./policy/About"
+
 function App() {
   return (
-     <CartProvider>
-        <UserProvider>
+    <CartProvider>
+      <UserProvider>
         <Router>
           <div className="d-flex flex-column min-vh-100">
             <Header />
@@ -50,12 +51,13 @@ function App() {
                 <Route path="/policy/RefundPolicy" element={<RefundPolicy />} /> 
               </Routes>
             </main>
+            <Chatbot context={{}} />
             <Footer />
           </div>
         </Router>
         <Toaster position="top-right" toastOptions={{ duration: 2000 }} />
       </UserProvider>
-     </CartProvider>
+    </CartProvider>
   );
 }
 

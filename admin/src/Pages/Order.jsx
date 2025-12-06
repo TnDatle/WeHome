@@ -12,6 +12,32 @@ const Order = () => {
   const [statusFilter, setStatusFilter] = useState("Tất cả");
   const [dateFilter, setDateFilter] = useState("");
 
+  // ===============================
+  // CHUẨN HÓA NGÀY (CHO MỌI KIỂU FIRESTORE)
+  // ===============================
+  const formatDate = (raw) => {
+    if (!raw) return null;
+
+    let date;
+
+    // Firestore Timestamp (toDate())
+    if (raw.toDate) {
+      date = raw.toDate();
+    }
+    // Firestore seconds
+    else if (raw.seconds) {
+      date = new Date(raw.seconds * 1000);
+    }
+    // String hoặc Date object
+    else {
+      date = new Date(raw);
+    }
+
+    if (isNaN(date.getTime())) return null;
+
+    return date.toISOString().slice(0, 10); // YYYY-MM-DD
+  };
+
   // Lấy danh sách đơn hàng
   const fetchOrders = async () => {
     try {
@@ -34,12 +60,11 @@ const Order = () => {
       await axios.patch(`http://localhost:5000/api/orders/${id}/status`, {
         status: newStatus,
       });
-      await fetchOrders(); // gọi lại danh sách để đảm bảo dữ liệu mới nhất
+      await fetchOrders();
     } catch (err) {
-      console.error(" Lỗi cập nhật trạng thái:", err);
+      console.error("Lỗi cập nhật trạng thái:", err);
     }
   };
-
 
   // Tạo vận chuyển
   const handleCreateShipment = async (id) => {
@@ -47,28 +72,15 @@ const Order = () => {
       const carrier = prompt("Nhập đơn vị vận chuyển (GHN / GHTK / VNPOST):", "GHN");
       if (!carrier) return;
 
-      const res = await axios.patch(`http://localhost:5000/api/orders/${id}/shipping`, {
-        carrier,
-      });
-
-      setOrders((prev) =>
-        prev.map((o) =>
-          o.id === id
-            ? {
-                ...o,
-                status: res.data.status,
-                shipping: {
-                  carrier: res.data.carrier || carrier,
-                  trackingCode: res.data.trackingCode,
-                  currentStatus: "picked_up",
-                },
-              }
-            : o
-        )
+      const res = await axios.patch(
+        `http://localhost:5000/api/orders/${id}/shipping`,
+        { carrier }
       );
+
       alert(`Đã tạo vận chuyển thành công! Mã vận đơn: ${res.data.trackingCode}`);
+      await fetchOrders();
     } catch (err) {
-      console.error(" Lỗi tạo vận chuyển:", err.response?.data || err.message);
+      console.error("Lỗi tạo vận chuyển:", err);
       alert("Không thể tạo đơn vận chuyển, vui lòng thử lại!");
     }
   };
@@ -80,22 +92,32 @@ const Order = () => {
       await axios.delete(`http://localhost:5000/api/orders/${id}`);
       setOrders((prev) => prev.filter((o) => o.id !== id));
     } catch (err) {
-      console.error(" Lỗi khi xóa đơn hàng:", err);
+      console.error("Lỗi khi xóa đơn hàng:", err);
     }
   };
 
-  // Lọc đơn hàng
+  // ===============================
+  // LỌC ĐƠN HÀNG
+  // ===============================
   const filteredOrders = orders
-    .filter((o) => o.fullname?.toLowerCase().includes(search.toLowerCase()))
-    .filter((o) => (statusFilter === "Tất cả" ? true : o.status === statusFilter))
-    .filter((o) => (dateFilter ? o.createdAt?.slice(0, 10) === dateFilter : true));
+    .filter((o) =>
+      o.fullname?.toLowerCase().includes(search.toLowerCase())
+    )
+    .filter((o) =>
+      statusFilter === "Tất cả" ? true : o.status === statusFilter
+    )
+    .filter((o) => {
+      if (!dateFilter) return true;
+      const day = formatDate(o.createdAt);
+      return day === dateFilter;
+    });
 
   return (
     <div className="order-container">
       <div className="order-header">
         <h4>Quản lý đơn hàng</h4>
         <button className="btn-refresh" onClick={fetchOrders}>
-             Làm mới
+          Làm mới
         </button>
       </div>
 
@@ -103,16 +125,21 @@ const Order = () => {
       <div className="order-filter">
         <input
           type="text"
-          placeholder=" Tìm theo tên khách..."
+          placeholder="Tìm theo tên khách..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
+
         <input
           type="date"
           value={dateFilter}
           onChange={(e) => setDateFilter(e.target.value)}
         />
-        <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
+
+        <select
+          value={statusFilter}
+          onChange={(e) => setStatusFilter(e.target.value)}
+        >
           <option>Tất cả</option>
           <option>Chờ xử lý</option>
           <option>Đang giao</option>
@@ -121,6 +148,7 @@ const Order = () => {
         </select>
       </div>
 
+      {/* Danh sách đơn hàng */}
       {loading ? (
         <p>Đang tải đơn hàng...</p>
       ) : filteredOrders.length === 0 ? (
@@ -138,6 +166,7 @@ const Order = () => {
               <th>Thao tác</th>
             </tr>
           </thead>
+
           <tbody>
             {filteredOrders.map((o) => {
               const locked = o.status === "Hoàn thành" || o.status === "Đã hủy";
@@ -145,14 +174,20 @@ const Order = () => {
                 <tr key={o.id}>
                   <td>{o.orderId}</td>
                   <td>{o.fullname}</td>
-                  <td>{o.createdAt ? o.createdAt.slice(0, 10) : "—"}</td>
+
+                  {/* NGÀY ĐẶT KHÔNG BAO GIỜ LỖI */}
+                  <td>{formatDate(o.createdAt) || "—"}</td>
+
                   <td>{o.total.toLocaleString("vi-VN")} ₫</td>
+
                   <td>
                     <select
                       value={o.status}
-                      onChange={(e) => handleStatusChange(o.id, e.target.value)}
+                      onChange={(e) =>
+                        handleStatusChange(o.id, e.target.value)
+                      }
                       className={`status-dropdown ${o.status?.toLowerCase()}`}
-                      disabled={locked} // ✅ không cho đổi nếu hoàn thành/hủy
+                      disabled={locked}
                     >
                       <option>Chờ xử lý</option>
                       <option>Đang giao</option>
@@ -160,6 +195,7 @@ const Order = () => {
                       <option>Đã hủy</option>
                     </select>
                   </td>
+
                   <td>
                     {o.paymentStatus === "Đã thanh toán" ? (
                       <span className="paid">Đã thanh toán</span>
@@ -167,8 +203,10 @@ const Order = () => {
                       <span className="unpaid">Chưa thanh toán</span>
                     )}
                   </td>
+
                   <td>
                     <button onClick={() => setSelectedOrder(o)}>Xem</button>
+
                     {o.status === "Chờ xử lý" && (
                       <button
                         className="ship-btn"
@@ -177,6 +215,7 @@ const Order = () => {
                         Tạo vận chuyển
                       </button>
                     )}
+
                     <button className="danger" onClick={() => handleDelete(o.id)}>
                       Xóa
                     </button>
@@ -188,26 +227,52 @@ const Order = () => {
         </table>
       )}
 
-      {/* Modal chi tiết */}
+      {/* MODAL CHI TIẾT */}
       {selectedOrder && (
         <div className="order-modal">
           <div className="order-modal-content">
             <h5>Chi tiết đơn hàng {selectedOrder.orderId}</h5>
-            <p><strong>Khách hàng:</strong> {selectedOrder.fullname}</p>
-            <p><strong>Email:</strong> {selectedOrder.email || "—"}</p>
-            <p><strong>SĐT:</strong> {selectedOrder.phone}</p>
-            <p><strong>Địa chỉ:</strong> {selectedOrder.address}, {selectedOrder.commune}, {selectedOrder.province}</p>
-            <p><strong>Ghi chú:</strong> {selectedOrder.note || "Không có"}</p>
-            <p><strong>Ngày đặt:</strong> {selectedOrder.createdAt?.slice(0, 10)}</p>
-            <p><strong>Phương thức thanh toán:</strong> {selectedOrder.payment}</p>
-            <p><strong>Trạng thái thanh toán:</strong> {selectedOrder.paymentStatus}</p>
-            <p><strong>Trạng thái đơn:</strong> {selectedOrder.status}</p>
+
+            <p>
+              <strong>Khách hàng:</strong> {selectedOrder.fullname}
+            </p>
+            <p>
+              <strong>Email:</strong> {selectedOrder.email || "—"}
+            </p>
+            <p>
+              <strong>SĐT:</strong> {selectedOrder.phone}
+            </p>
+            <p>
+              <strong>Địa chỉ:</strong> {selectedOrder.address},{" "}
+              {selectedOrder.commune}, {selectedOrder.province}
+            </p>
+            <p>
+              <strong>Ghi chú:</strong> {selectedOrder.note || "Không có"}
+            </p>
+
+            <p>
+              <strong>Ngày đặt:</strong>{" "}
+              {formatDate(selectedOrder.createdAt) || "—"}
+            </p>
+
+            <p>
+              <strong>Phương thức thanh toán:</strong>{" "}
+              {selectedOrder.payment}
+            </p>
+            <p>
+              <strong>Trạng thái thanh toán:</strong>{" "}
+              {selectedOrder.paymentStatus}
+            </p>
+            <p>
+              <strong>Trạng thái đơn:</strong> {selectedOrder.status}
+            </p>
 
             <h6>Danh sách sản phẩm:</h6>
             <ul>
               {selectedOrder.items?.map((p, i) => (
                 <li key={i}>
-                  {p.name} — {p.quantity} × {p.price.toLocaleString("vi-VN")}₫
+                  {p.name} — {p.quantity} ×{" "}
+                  {p.price.toLocaleString("vi-VN")}₫
                 </li>
               ))}
             </ul>
@@ -216,26 +281,46 @@ const Order = () => {
               <>
                 <hr />
                 <h6>Đơn vị vận chuyển:</h6>
-                <p><strong>Đơn vị:</strong> {selectedOrder.shipping.carrier}</p>
-                <p><strong>Mã vận đơn:</strong> {selectedOrder.shipping.trackingCode}</p>
-                <p><strong>Trạng thái giao:</strong>
+                <p>
+                  <strong>Đơn vị:</strong>{" "}
+                  {selectedOrder.shipping.carrier}
+                </p>
+                <p>
+                  <strong>Mã vận đơn:</strong>{" "}
+                  {selectedOrder.shipping.trackingCode}
+                </p>
+                <p>
+                  <strong>Trạng thái giao:</strong>{" "}
                   {selectedOrder.shipping.currentStatus === "picked_up"
-                    ? " Đã lấy hàng"
+                    ? "Đã lấy hàng"
                     : selectedOrder.shipping.currentStatus === "in_transit"
-                    ? " Đang giao"
+                    ? "Đang giao"
                     : selectedOrder.shipping.currentStatus === "delivered"
-                    ? " Đã giao thành công"
-                    : " — "}
+                    ? "Đã giao thành công"
+                    : "—"}
                 </p>
               </>
             )}
 
             <hr />
-            <p><strong>Tổng tiền:</strong> {selectedOrder.total.toLocaleString("vi-VN")} ₫</p>
+            <p>
+              <strong>Tổng tiền:</strong>{" "}
+              {selectedOrder.total.toLocaleString("vi-VN")} ₫
+            </p>
 
             <div className="modal-buttons">
-              <button className="print-btn" onClick={() => printInvoice(selectedOrder)}>🖨 In hóa đơn</button>
-              <button className="close-btn" onClick={() => setSelectedOrder(null)}>Đóng</button>
+              <button
+                className="print-btn"
+                onClick={() => printInvoice(selectedOrder)}
+              >
+                🖨 In hóa đơn
+              </button>
+              <button
+                className="close-btn"
+                onClick={() => setSelectedOrder(null)}
+              >
+                Đóng
+              </button>
             </div>
           </div>
         </div>

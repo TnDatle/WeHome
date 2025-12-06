@@ -3,8 +3,9 @@ import cors from "cors";
 import fileUpload from "express-fileupload";
 import productRoutes from "./routes/product.js";
 import orderRoutes from "./routes/order.js";
+import chatRoutes from "./routes/chat.js";
 // Firebase
-import { db } from "./config/firebase.js";
+import { db } from "./config/Firebase.js";
 import { collection, getDocs } from "firebase/firestore";
 
 const app = express();
@@ -15,7 +16,14 @@ app.use(fileUpload()); // enable file upload
 // Routes
 app.use("/api/products", productRoutes);
 app.use("/api/orders", orderRoutes);
+app.use("/api/chat", chatRoutes);
 app.get("/", (req, res) => res.send("Server OK "));
+
+
+app.use((req, res) => {
+  console.log("❌ Không khớp route:", req.method, req.url);
+  res.status(404).json({ error: "Route not found" });
+});
 
 // Test Firebase connection
 const testFirebase = async () => {

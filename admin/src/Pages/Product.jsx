@@ -116,16 +116,18 @@ const Product = () => {
 
 
   const handleDelete = async (id) => {
-    if (!window.confirm("Bạn có chắc muốn xóa sản phẩm này không?")) return;
-    try {
-      await axios.delete(`${API_BASE}/${id}`);
-      setProducts((prev) => prev.filter((p) => p.id !== id));
-      toast.success("🗑 Xóa sản phẩm thành công");
-    } catch (err) {
-      console.error("Lỗi xóa:", err);
-      toast.error("Không thể xóa sản phẩm");
-    }
-  };
+  if (!window.confirm("Xóa sản phẩm này?")) return;
+
+  try {
+    await axios.delete(`http://localhost:5000/api/products/${id}`);
+    // Xóa khỏi state local
+    setProducts((prev) => prev.filter((p) => p.id !== id));
+    toast.success("Xóa sản phẩm thành công");
+  } catch (err) {
+    console.error("Lỗi xóa:", err);
+    toast.error("Xóa sản phẩm thất bại");
+  }
+};
 
   const filteredProducts = products.filter(
     (p) =>

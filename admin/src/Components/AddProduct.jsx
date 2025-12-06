@@ -1,10 +1,8 @@
 import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { db } from "../Config/firebase-config";
-import { doc, setDoc, addDoc, collection } from "firebase/firestore";
 import "../Style/AddProduct.css";
 
-const AddProduct = ({ onClose, product }) => {
+const AddProduct = ({ onClose, product, onSave }) => {
   const isEdit = !!product;
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -30,8 +28,8 @@ const AddProduct = ({ onClose, product }) => {
     color: "",
     material: "",
     size: "",
-    images: [],
-    available: true, // mặc định còn hàng
+    images: [],       // string URL hoặc {file, preview}
+    available: true,
   });
 
   // Khi chỉnh sửa hoặc thêm mới
@@ -39,12 +37,10 @@ const AddProduct = ({ onClose, product }) => {
     if (isEdit && product) {
       const availableValue =
         product.available === undefined
-          ? true // nếu chưa có field, coi như còn hàng
+          ? true
           : product.available === true ||
             product.available === "true" ||
-            product.available === 1
-          ? true
-          : false;
+            product.available === 1;
 
       setFormData({
         id: product.id || "",
@@ -56,9 +52,8 @@ const AddProduct = ({ onClose, product }) => {
         material: product.material || "",
         size: product.size || "",
         images: product.images || [],
-        available: availableValue, // luôn boolean thật
+        available: availableValue,
       });
-
     } else {
       setFormData({
         id: "",
@@ -75,20 +70,26 @@ const AddProduct = ({ onClose, product }) => {
     }
   }, [isEdit, product]);
 
-
-
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleImageChange = (e) => {
-    const files = Array.from(e.target.files);
+    const files = Array.from(e.target.files || []);
     const fileData = files.map((file) => ({
       file,
       preview: URL.createObjectURL(file),
     }));
-    setFormData((prev) => ({ ...prev, images: fileData }));
+
+    // giữ URL cũ + thêm ảnh mới
+    setFormData((prev) => ({
+      ...prev,
+      images: [
+        ...(prev.images || []).filter((img) => typeof img === "string"),
+        ...fileData,
+      ],
+    }));
   };
 
   const handleToggleAvailable = () => {
@@ -101,20 +102,21 @@ const AddProduct = ({ onClose, product }) => {
     setIsSubmitting(true);
 
     try {
-      if (isEdit && formData.id) {
-        // ✅ Cập nhật sản phẩm
-        const ref = doc(db, "Products", formData.id);
-        await setDoc(ref, formData, { merge: true });
-        toast.success("Cập nhật sản phẩm thành công");
-      } else {
-        //  Thêm sản phẩm mới
-        await addDoc(collection(db, "Products"), formData);
-        toast.success("Thêm sản phẩm thành công");
+      const payload = {
+        ...formData,
+        price: Number(formData.price) || 0,
+      };
+
+      console.log(" Submit AddProduct payload:", payload);
+
+      if (onSave) {
+        await onSave(payload); 
       }
-      setTimeout(() => onClose?.(), 600);
+
+      onClose?.();
     } catch (error) {
+      console.error("Lỗi khi lưu sản phẩm (AddProduct):", error);
       toast.error("Lưu thất bại, vui lòng thử lại");
-      console.error("Lỗi khi lưu sản phẩm:", error);
     } finally {
       setIsSubmitting(false);
     }
@@ -202,12 +204,15 @@ const AddProduct = ({ onClose, product }) => {
               <label className="switch">
                 <input
                   type="checkbox"
-                  checked={!!formData.available} // ép về boolean
+                  checked={!!formData.available}
                   onChange={handleToggleAvailable}
                 />
                 <span className="slider"></span>
               </label>
-              <span className="toggle-label-text" style={{ color: formData.available ? "#28a745" : "#dc3545" }}>
+              <span
+                className="toggle-label-text"
+                style={{ color: formData.available ? "#28a745" : "#dc3545" }}
+              >
                 {formData.available ? "Còn hàng " : "Hết hàng "}
               </span>
             </div>
@@ -224,7 +229,12 @@ const AddProduct = ({ onClose, product }) => {
             />
 
             <label>Hình ảnh</label>
-            <input type="file" multiple accept="image/*" onChange={handleImageChange} />
+            <input
+              type="file"
+              multiple
+              accept="image/*"
+              onChange={handleImageChange}
+            />
             <div className="preview-images">
               {(formData.images || []).map((img, index) => {
                 const src = typeof img === "string" ? img : img.preview;

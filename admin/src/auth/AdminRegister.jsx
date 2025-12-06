@@ -57,7 +57,7 @@ export default function AdminRegister() {
           <input
             type="email"
             name="email"
-            placeholder="Email công ty (ví dụ: dat.le@wehome.vn)"
+            placeholder="Email công ty (ví dụ: abc@wehome.vn)"
             value={form.email}
             onChange={handleChange}
             required
