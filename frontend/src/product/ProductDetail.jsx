@@ -20,29 +20,22 @@ export default function ProductDetail() {
 
 
   useEffect(() => {
-  const fetchProduct = async () => {
-    try {
-      const res = await axios.get(
-        `${process.env.REACT_APP_API_URL}/api/products`
-      );
-
-      const list = Array.isArray(res.data.data) ? res.data.data : [];
-      const found = list.find((p) => p.id === id);
-
-      if (found) {
-        setProduct(found);
-        if (found.images?.length > 0) setMainImage(found.images[0]);
-      } else {
-        setProduct({});
+    const fetchProduct = async () => {
+      try {
+        const res = await axios.get("http://localhost:5000/api/products");
+        const found = res.data.find((p) => p.id === id);
+        if (found) {
+          setProduct(found);
+          if (found.images?.length > 0) setMainImage(found.images[0]);
+        } else {
+          setProduct({});
+        }
+      } catch (err) {
+        console.error(" Lỗi khi tải chi tiết sản phẩm:", err);
       }
-    } catch (err) {
-      console.error("Lỗi khi tải chi tiết sản phẩm:", err);
-    }
-  };
-
-  fetchProduct();
-}, [id]);
-
+    };
+    fetchProduct();
+  }, [id]);
 
   const handleThumbClick = (img) => {
     // Hiệu ứng mờ nhẹ khi đổi ảnh

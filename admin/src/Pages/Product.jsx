@@ -12,8 +12,7 @@ const Product = () => {
   const [categoryFilter, setCategoryFilter] = useState("Tất cả");
   const [isSaving, setIsSaving] = useState(false);
 
-  const API_URL = process.env.REACT_APP_API_URL;
-  const API_BASE = `${API_URL}/api/products`;
+  const API_BASE = "http://localhost:5000/api/products";
 
   // Lấy danh sách sản phẩm
   useEffect(() => { fetchProducts(); }, []);
@@ -86,15 +85,15 @@ const Product = () => {
       let res;
       if (formObj.id) {
         res = await axios.put(`${API_BASE}/${formObj.id}`, fd, {
-        headers: { "Content-Type": "multipart/form-data" },
-      }); 
+          headers: { "Content-Type": "multipart/form-data" },
+        });
         toast.success(" Cập nhật sản phẩm thành công", { id: "saving" });
         setProducts((prev) =>
           prev.map((p) => (p.id === formObj.id ? res.data : p))
         );
       } else {
         res = await axios.post(API_BASE, fd, {
-        headers: { "Content-Type": "multipart/form-data" },
+          headers: { "Content-Type": "multipart/form-data" },
         });
 
         toast.success(" Thêm sản phẩm thành công", { id: "saving" });
@@ -120,7 +119,7 @@ const Product = () => {
   if (!window.confirm("Xóa sản phẩm này?")) return;
 
   try {
-    await axios.delete(`${API_BASE}/${id}`);
+    await axios.delete(`http://localhost:5000/api/products/${id}`);
     // Xóa khỏi state local
     setProducts((prev) => prev.filter((p) => p.id !== id));
     toast.success("Xóa sản phẩm thành công");

@@ -23,7 +23,7 @@ export default function Chatbot({ context }) {
     setLoading(true);
 
     try {
-      const res = await axios.post(`${process.env.REACT_APP_API_URL}/api/chat`, {
+      const res = await axios.post("http://localhost:5000/api/chat", {
         message: input,
         history: newMsgs,
         context: context || {},
@@ -52,7 +52,7 @@ export default function Chatbot({ context }) {
         {
           role: "assistant",
           content:
-            "Xin lỗi bạn, mình đang lỗi nhẹ. Bạn thử lại giúp mình nhé ",
+            "Xin lỗi bạn, mình đang lỗi nhẹ. Bạn thử lại giúp mình nhé 🥲",
         },
       ]);
     }
