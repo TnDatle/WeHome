@@ -22,7 +22,7 @@ export default function ProductDetail() {
   useEffect(() => {
     const fetchProduct = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/api/products");
+        const res = await axios.get(`${process.env.REACT_APP_API_URL}/api/products`);
         const found = res.data.find((p) => p.id === id);
         if (found) {
           setProduct(found);
