@@ -23,7 +23,9 @@ export default function ProductDetail() {
     const fetchProduct = async () => {
       try {
         const res = await axios.get(`${process.env.REACT_APP_API_URL}/api/products`);
-        const found = res.data.find((p) => p.id === id);
+        const list = Array.isArray(res.data.data) ? res.data.data : [];
+        const found = list.find((p) => p.id === id);
+
         if (found) {
           setProduct(found);
           if (found.images?.length > 0) setMainImage(found.images[0]);
